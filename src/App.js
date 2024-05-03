@@ -7,6 +7,7 @@ import Navigation from "./Components/Navigation/Navigation";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import ViewUsers from "./Admin/UserNav/ViewUsers";
 import DashBoardCashier from "./Components/Dashboard/DashBoardCashier";
+import Products from "./Admin/Products/Products";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
@@ -71,6 +72,7 @@ function App() {
                   <>
                     <Route path="/users" element={<ViewUsers />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/products" element={<Products />} />
                   </>
                 ) : (
                   <>

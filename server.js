@@ -232,6 +232,59 @@ app.get("/activeUsers", (req, res) => {
 
 //** End For Users  **//
 
+// -----------------------------------------------------------
+
+//** For Products  **//
+app.get("/category", (req, res) => {
+  const query = "SELECT * FROM product_category ORDER BY category_name";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
+app.post("/addCategory", (req, res) => {
+  const { category_name } = req.body;
+
+  if (!category_name) {
+    return res.status(400).json({
+      error: "Bad Request",
+      details: "All fields are required",
+    });
+  }
+
+  const queryMaxCategoryId =
+    "SELECT MAX(category_id) AS max_category_id FROM product_category";
+  db.query(queryMaxCategoryId, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ Message: "Error" });
+    }
+    let newCategoryId = 100; // Default start value
+    if (result && result[0] && result[0].max_category_id !== null) {
+      newCategoryId = parseInt(result[0].max_category_id) + 1;
+    }
+
+    const queryInsertCategory =
+      "INSERT INTO product_category(category_id, category_name) VALUES (?, ?)";
+    db.query(
+      queryInsertCategory,
+      [newCategoryId, category_name],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ Message: "Error" });
+        }
+        return res.status(200).json({ Status: "Success" });
+      }
+    );
+  });
+});
+
+//** End For Products  **//
+
 // Start server
 app.listen(8080, () => {
   console.log(`Server is running on port 8080`);

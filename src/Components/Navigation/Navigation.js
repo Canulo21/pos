@@ -5,7 +5,7 @@ import { Menu, SquareX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo from "../../Assets/images/logo.png";
-import { User, LayoutDashboard, LineChart } from "lucide-react";
+import { User, LayoutDashboard, LineChart, ShoppingBag } from "lucide-react";
 
 function Navigation({ onLogout, isAdmin }) {
   const navigate = useNavigate();
@@ -77,6 +77,10 @@ function Navigation({ onLogout, isAdmin }) {
             <NavLink to={"/users"}>
               <User />
               Users
+            </NavLink>
+            <NavLink to={"/products"}>
+              <ShoppingBag />
+              Products
             </NavLink>
             <NavLink to={"/reports"}>
               <LineChart />
