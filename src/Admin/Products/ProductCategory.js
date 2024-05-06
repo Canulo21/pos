@@ -62,6 +62,40 @@ function ProductCategory() {
     setCategoryName(e.target.value);
   };
 
+  const handleDelete = async (cat_id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`http://localhost:8080/deleteCategory/${cat_id}`)
+          .then(() => {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Category has been deleted.",
+              icon: "success",
+            });
+            fetchCategories();
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: "error",
+              title: "Delete Failed",
+              text: error.response
+                ? error.response.data.error
+                : "An unexpected error occurred. Please try again later.",
+            });
+          });
+      }
+    });
+  };
+
   const modalVariants = {
     hidden: {
       opacity: 0,
@@ -110,7 +144,9 @@ function ProductCategory() {
                   </td>
                   <td className="border border-slate-300 p-1">
                     <div className="flex justify-center">
-                      <button className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]">
+                      <button
+                        className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
+                        onClick={() => handleDelete(d.category_id)}>
                         <Trash2 />
                         Delete
                       </button>

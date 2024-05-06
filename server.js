@@ -283,6 +283,36 @@ app.post("/addCategory", (req, res) => {
   });
 });
 
+// remove category
+
+app.delete("/deleteCategory/:id", (req, res) => {
+  const cat_id = req.params.id;
+
+  const query = "DELETE FROM product_category WHERE category_id = ?";
+  db.query(query, [cat_id], (err, result) => {
+    if (err) {
+      console.error("Error deleting data:", err);
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: err.message });
+    } else {
+      res.status(200).json({ message: "Data deleted successfully" });
+    }
+  });
+});
+
+// table for my all Products
+app.get("/allProducts", (req, res) => {
+  const query =
+    "SELECT products.prod_id, products.prod_name, products.prod_price, product_category.category_name, product_quantity.quantity FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id ORDER BY products.prod_name";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
 //** End For Products  **//
 
 // Start server
