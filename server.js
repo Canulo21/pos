@@ -161,7 +161,7 @@ app.post("/register", async (req, res) => {
 
 // get users
 app.get("/viewUsers", (req, res) => {
-  const query = "SELECT * FROM users ORDER BY lname";
+  const query = "SELECT * FROM users WHERE status = 'accepted' ORDER BY lname";
   db.query(query, (err, data) => {
     if (err) {
       return res.status(500).json({ Message: "Error" });
@@ -311,6 +311,87 @@ app.get("/allProducts", (req, res) => {
     }
     return res.json(data);
   });
+});
+
+// add Products
+app.post("/addProduct", (req, res) => {
+  const { prod_name, category_name, prod_price, quantity } = req.body;
+
+  // Check if any field is empty
+  if (!prod_name || !category_name || !prod_price || !quantity) {
+    return res.status(400).send("All fields are required");
+  }
+
+  // Check if prod_name already exists
+  db.query(
+    "SELECT * FROM products WHERE prod_name = ?",
+    [prod_name],
+    (error, results) => {
+      if (error) {
+        console.error("Error checking existing product:", error);
+        return res.status(500).send("Internal server error");
+      }
+
+      if (results.length > 0) {
+        // Product with the same name already exists
+        console.log("Product already exists:", prod_name);
+        return res
+          .status(400)
+          .send("Product with the same name already exists");
+      }
+
+      // If prod_name doesn't exist and all fields are filled, proceed with adding the product
+      db.query(
+        "SELECT category_id FROM product_category WHERE category_name = ?",
+        [category_name],
+        (error, results) => {
+          if (error) {
+            console.error("Error retrieving category ID:", error);
+            return res.status(500).send("Internal server error");
+          }
+
+          if (results.length === 0) {
+            console.log("Category not found:", category_name);
+            return res.status(404).send("Category not found");
+          }
+
+          const category_id = results[0].category_id;
+
+          // Insert data into products table
+          db.query(
+            "INSERT INTO products (prod_name, category_id, prod_price) VALUES (?, ?, ?)",
+            [prod_name, category_id, prod_price],
+            (error, results) => {
+              if (error) {
+                console.error("Error inserting into products table:", error);
+                return res.status(500).send("Internal server error");
+              }
+
+              const prod_id = results.insertId;
+
+              // Insert data into product_quantity table
+              db.query(
+                "INSERT INTO product_quantity (prod_id, quantity) VALUES (?, ?)",
+                [prod_id, quantity],
+                (error, results) => {
+                  if (error) {
+                    console.error(
+                      "Error inserting into product_quantity table:",
+                      error
+                    );
+                    return res.status(500).send("Internal server error");
+                  }
+
+                  console.log("Data inserted successfully.");
+                  res.status(200).send("Product added successfully");
+                }
+              );
+            }
+          );
+        }
+      );
+    }
+  );
 });
 
 //** End For Products  **//

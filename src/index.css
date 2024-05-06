@@ -102,7 +102,29 @@ a:hover {
   align-items: flex-start;
   justify-content: center;
   background: rgba(255,255,255, .9);
+  z-index: 1;
 }
 .modal-form > form {
   box-shadow: 0 3px 6px rgba(0, 0, 0, .16);
+}
+
+.no-data {
+  position: relative;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, .6));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+	0% {
+    filter: drop-shadow(0 5px 15px 0px rgba(0,0,0,0.6));
+		transform: translatey(0px);
+	}
+	50% {
+    filter: drop-shadow(0 25px 15px 0px rgba(0,0,0,0.2));
+		transform: translatey(-15px);
+	}
+	100% {
+    filter: drop-shadow(0 5px 15px 0px rgba(0,0,0,0.6));
+		transform: translatey(0px);
+	}
 }

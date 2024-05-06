@@ -35,6 +35,8 @@ function RegistrationForm() {
         mname: "",
         lname: "",
         role: "",
+        status: "pending",
+        isActive: false,
         username: "",
         password: "",
       });

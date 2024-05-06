@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import noData from "../../Assets/images/no-cat.png";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
 import { Trash2, Layers3, X } from "lucide-react";
@@ -24,6 +25,7 @@ function ProductCategory() {
 
   const closeModal = () => {
     setShowModal(false);
+    window.location.reload();
   };
 
   const handleInsertData = async (e) => {
@@ -82,6 +84,7 @@ function ProductCategory() {
               icon: "success",
             });
             fetchCategories();
+            window.location.reload();
           })
           .catch((error) => {
             Swal.fire({
@@ -129,33 +132,52 @@ function ProductCategory() {
             <Layers3 />
             Add Category
           </button>
-          <table className="table-auto mt-2 bg-[#f6fdef] shadow-md px-8 pt-6 pb-8 mb-4 w-full border-collapse border border-slate-400 p-5">
-            <thead>
-              <tr>
-                <th className="border border-slate-300 p-2">Category Name</th>
-                <th className="border border-slate-300 p-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {category.map((d, index) => (
-                <tr key={index}>
-                  <td className="border border-slate-300 p-2 uppercase text-xl font-semibold">
-                    {d.category_name}
-                  </td>
-                  <td className="border border-slate-300 p-1">
-                    <div className="flex justify-center">
-                      <button
-                        className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
-                        onClick={() => handleDelete(d.category_id)}>
-                        <Trash2 />
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+          {category.length > 0 ? (
+            <table className="table-auto mt-2 bg-[#f6fdef] shadow-md px-8 pt-6 pb-8 mb-4 w-full border-collapse border border-slate-400 p-5">
+              <thead>
+                <tr>
+                  <th className="border border-slate-300 p-2">Category Name</th>
+                  <th className="border border-slate-300 p-2">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {category.map((d, index) => (
+                  <tr key={index}>
+                    <td className="border border-slate-300 p-2 uppercase text-xl font-semibold">
+                      {d.category_name}
+                    </td>
+                    <td className="border border-slate-300 p-1">
+                      <div className="flex justify-center">
+                        <button
+                          className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
+                          onClick={() => handleDelete(d.category_id)}>
+                          <Trash2 />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <motion.div
+              variants={fadeIn("up", 0.4)}
+              initial="hidden"
+              whileInView={"show"}
+              viewport={{ once: true, amount: 0.4 }}
+              className="flex justify-center items-center flex-col w-full">
+              <img
+                src={noData}
+                alt="no-data"
+                style={{ width: "400px" }}
+                className="no-data"
+              />
+              <p className="text-2xl pb-5 uppercase font-semibold">
+                No Category Record
+              </p>
+            </motion.div>
+          )}
         </div>
       </motion.div>
 

@@ -6,6 +6,7 @@ import axios from "axios";
 
 function Products() {
   const [categoryName, setCategoryName] = useState([]);
+  const [getProducts, setGetProducts] = useState([]);
 
   const fetchCategory = async () => {
     try {
@@ -13,6 +14,12 @@ function Products() {
       const getCategory = res.data;
       setCategoryName(getCategory);
     } catch (err) {}
+  };
+
+  const fetchAllProducts = async () => {
+    const res = await axios.get("http://localhost:8080/allProducts");
+    const AllProducts = res.data;
+    setGetProducts(AllProducts);
   };
 
   return (
@@ -31,7 +38,10 @@ function Products() {
             </div>
           </div>
           <div className="mt-5">
-            <AllProducts />
+            <AllProducts
+              fetchAllProducts={fetchAllProducts}
+              getProducts={getProducts}
+            />
           </div>
         </div>
       </div>

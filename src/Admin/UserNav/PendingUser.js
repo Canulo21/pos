@@ -1,22 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
 import { Check, Trash2 } from "lucide-react";
+import noData from "../../Assets/images/no-pending.png";
 
-function PendingUser() {
-  const [fetchData, setFetchData] = useState([]);
-
-  const fetchPendingUser = () => {
-    try {
-      axios.get("http://localhost:8080/pendingUsers").then((res) => {
-        const pendingData = res.data;
-        setFetchData(pendingData);
-      });
-    } catch (err) {}
-  };
-
+function PendingUser({ fetchPendingUser, fetchUser }) {
   const handleAccepted = async (userId) => {
     try {
       await axios.put(`http://localhost:8080/acceptUser/${userId}`, {
@@ -30,7 +20,7 @@ function PendingUser() {
         showConfirmButton: false,
         timer: 1500,
       });
-
+      window.location.reload();
       fetchPendingUser();
     } catch (err) {}
   };
@@ -71,12 +61,6 @@ function PendingUser() {
 
   useEffect(() => {
     fetchPendingUser();
-
-    const interval = setInterval(() => {
-      fetchPendingUser();
-    }, 5000);
-
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -88,7 +72,7 @@ function PendingUser() {
         viewport={{ once: true, amount: 0.3 }}
         className="border-solid border-2 border-teal-700 py-1 px-6 shadow-xl text-center h-full">
         <h2>Pending Registered Users</h2>
-        {fetchData.length > 0 ? (
+        {fetchUser.length > 0 ? (
           <table className="table-auto mt-2 bg-[#f6fdef] shadow-md px-8 pt-6 pb-8 mb-4 w-full border-collapse border border-slate-400 p-5">
             <thead>
               <tr>
@@ -107,7 +91,7 @@ function PendingUser() {
               </tr>
             </thead>
             <tbody>
-              {fetchData.map((d, index) => (
+              {fetchUser.map((d, index) => (
                 <tr key={index}>
                   <td className="border border-slate-300 p-2 uppercase font-bold">
                     {d.fname}
@@ -145,9 +129,22 @@ function PendingUser() {
             </tbody>
           </table>
         ) : (
-          <p className="text-3xl font-bold uppercase italic py-5">
-            No Pending Users
-          </p>
+          <motion.div
+            variants={fadeIn("up", 0.4)}
+            initial="hidden"
+            whileInView={"show"}
+            viewport={{ once: true, amount: 0.4 }}
+            className="flex justify-center items-center flex-col">
+            <img
+              src={noData}
+              alt="no-data"
+              style={{ width: "200px" }}
+              className="no-data py-5"
+            />
+            <p className="text-2xl pb-5 uppercase font-semibold">
+              No Pending Users
+            </p>
+          </motion.div>
         )}
       </motion.div>
     </>

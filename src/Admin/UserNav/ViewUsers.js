@@ -9,6 +9,26 @@ import ActiveUsers from "./ActiveUsers";
 
 function ViewUsers() {
   const [getUsers, setGetUsers] = useState([]);
+  const [fetchUser, setFetchUser] = useState([]);
+  const [activeUser, setActiveUser] = useState([]);
+
+  const fetchActiveUser = () => {
+    try {
+      axios.get("http://localhost:8080/activeUsers").then((res) => {
+        const pendingData = res.data;
+        setActiveUser(pendingData);
+      });
+    } catch (err) {}
+  };
+
+  const fetchPendingUser = () => {
+    try {
+      axios.get("http://localhost:8080/pendingUsers").then((res) => {
+        const pendingData = res.data;
+        setFetchUser(pendingData);
+      });
+    } catch (err) {}
+  };
 
   const fetchData = async () => {
     try {
@@ -64,10 +84,16 @@ function ViewUsers() {
         <div className="bg-user">
           <div className="grid grid-cols-4 mt-5 gap-5">
             <div className="col-span-3 h-full">
-              <PendingUser />
+              <PendingUser
+                fetchPendingUser={fetchPendingUser}
+                fetchUser={fetchUser}
+              />
             </div>
             <div className="col-span-1 h-full">
-              <ActiveUsers />
+              <ActiveUsers
+                fetchActiveUser={fetchActiveUser}
+                activeUser={activeUser}
+              />
             </div>
           </div>
           <motion.div

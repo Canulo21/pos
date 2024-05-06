@@ -1,27 +1,14 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
 
-function ActiveUsers() {
-  const [fetchData, setFetchData] = useState([]);
-  const fetchActiveUser = () => {
-    try {
-      axios.get("http://localhost:8080/activeUsers").then((res) => {
-        const pendingData = res.data;
-        setFetchData(pendingData);
-      });
-    } catch (err) {}
-  };
-
+function ActiveUsers({ fetchActiveUser, activeUser }) {
   useEffect(() => {
-    fetchActiveUser();
-
-    const interval = setInterval(() => {
+    const intervalId = setInterval(() => {
       fetchActiveUser();
     }, 2000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -34,7 +21,7 @@ function ActiveUsers() {
         className="border-solid border-2 border-teal-700 pt-1 pb-5 px-6 shadow-xl text-center h-full">
         <h2>Active Users</h2>
         <div>
-          {fetchData.map((d, index) => (
+          {activeUser.map((d, index) => (
             <div
               key={index}
               className="flex text-xl font-medium justify-center gap-2 pt-2">
