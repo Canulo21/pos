@@ -63,7 +63,10 @@ function ProductCategory() {
 
   const handleInputChange = (e) => {
     e.preventDefault();
-    setCategoryName(e.target.value);
+    const { value } = e.target;
+    const formattedValue = value.replace(/\s+/g, "-");
+    setCategoryName(formattedValue);
+    console.log(categoryName);
   };
 
   const handleColortChange = (e) => {
