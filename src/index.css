@@ -133,6 +133,7 @@ a:hover {
   -moz-transition: all 0.3s ease-in-out 0s;
   -o-transition: all 0.3s ease-in-out 0s;
   transition: all 0.3s ease-in-out 0s;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0, .6));
 }
 .prod-img:hover{
   transform: scale(0.9);

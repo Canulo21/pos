@@ -303,6 +303,66 @@ app.post("/addCategory", (req, res) => {
   });
 });
 
+// view Arbs Details
+app.get("/viewCategory/:id", (req, res) => {
+  const category_id = req.params.id;
+
+  const query = `SELECT * FROM product_category WHERE category_id = ?`;
+
+  db.query(query, [category_id], (err, result) => {
+    if (err) {
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: err.message });
+    } else {
+      if (result.length === 0) {
+        res.status(404).json({ error: "Category not found" });
+      } else {
+        // Send the member data back to the client
+        res.status(200).json(result[0]);
+      }
+    }
+  });
+});
+
+// update category
+app.put("/updateCategory/:id", (req, res) => {
+  const category_id = req.params.id;
+  const { data } = req.body;
+  const { category_name, category_color } = data;
+
+  if (!category_name || !category_color) {
+    return res.status(400).json({
+      error: "Bad Request",
+      details: "All fields are required",
+    });
+  }
+
+  const query =
+    "UPDATE product_category SET category_name=?, category_color=? WHERE category_id=?";
+
+  db.query(
+    query,
+    [category_name, category_color, category_id],
+    (queryError, result) => {
+      if (queryError) {
+        console.error("updateError", queryError);
+        return res.status(500).json({
+          error: "Bad Request",
+          details: queryError.message,
+        });
+      }
+      if (!result.affectedRows) {
+        return res.status(404).json({
+          error: "Not found.",
+        });
+      }
+
+      return res.json({ updated: true, result });
+    }
+  );
+});
+
 // remove category
 
 app.delete("/deleteCategory/:id", (req, res) => {

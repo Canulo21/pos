@@ -4,13 +4,64 @@ import Swal from "sweetalert2";
 import noData from "../../Assets/images/no-cat.png";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
-import { Trash2, Layers3, X } from "lucide-react";
+import { Trash2, Layers3, X, Edit2, Upload } from "lucide-react";
+import { useParams } from "react-router-dom";
 
 function ProductCategory() {
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [category, setCategory] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [categoryColor, setCategoryColor] = useState("");
+  const [formData, setFormData] = useState({
+    category_name: "",
+    category_color: "",
+  });
+  const [getId, setGetId] = useState("");
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/viewCategory/${getId}`)
+      .then((res) => {
+        const getData = res.data;
+        setFormData(getData); // Update formData with the received data
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [getId]);
+
+  // update modal
+
+  const handleUpdateChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleUpdateData = async (e) => {
+    e.preventDefault();
+    try {
+      const updatedFormData = await axios.put(
+        `http://localhost:8080/updateCategory/${getId}`,
+        {
+          data: formData,
+        }
+      );
+      if (updatedFormData.data.updated) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Updated Successful!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // end
 
   const fetchCategories = async () => {
     try {
@@ -26,6 +77,7 @@ function ProductCategory() {
 
   const closeModal = () => {
     setShowModal(false);
+    setShowEditModal(false);
     window.location.reload();
   };
 
@@ -157,12 +209,21 @@ function ProductCategory() {
                       {d.category_name}
                     </td>
                     <td className="border border-slate-300 p-1">
-                      <div className="flex justify-center">
+                      <div className="flex justify-center gap-2">
                         <button
                           className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
                           onClick={() => handleDelete(d.category_id)}>
                           <Trash2 />
                           Delete
+                        </button>
+                        <button
+                          className="bg-[#436850] hover:bg-[#12372a] text-white py-2 px-4 rounded-md flex items-center gap-2"
+                          onClick={() => {
+                            setShowEditModal(true);
+                            setGetId(d.category_id);
+                          }}>
+                          <Edit2 />
+                          Edit
                         </button>
                       </div>
                     </td>
@@ -236,6 +297,58 @@ function ProductCategory() {
                 className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase"
                 type="button">
                 Save
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      ) : null}
+
+      {/* for Edit Category Modal */}
+      {showEditModal ? (
+        <motion.div
+          variants={modalVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          transition={modalTransition}
+          className="modal-form">
+          <form className="bg-[#fafafa] shadow-md rounded px-8 pt-6 pb-6 mb-4 w-1/3">
+            <button
+              onClick={closeModal}
+              className="float-right pt-2 pb-2 pl-5 pr-5 bg-[#436850] hover:bg-[#12372A] text-white rounded-md">
+              <X />
+            </button>
+            <div className="mt-10">
+              <label className="text-xl font-bold block text-center uppercase">
+                Category Name
+              </label>
+              <div className=" w-full mt-5">
+                <input
+                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  type="text"
+                  name="category_name"
+                  value={formData.category_name} // Bind value to formData.category_name
+                  onChange={handleUpdateChange}
+                  placeholder="eg. bottled"></input>
+              </div>
+              <div className="mt-5">
+                <label className="text-xl font-bold block text-center uppercase mb-5">
+                  Theme Background
+                </label>
+                <input
+                  type="color"
+                  name="category_color"
+                  value={formData.category_color} // Bind value to formData.category_color
+                  onChange={handleUpdateChange}
+                  className="appearance-none block w-full h-16 bg-gray-200 text-gray-700 border border-gray-200 rounded py-1 px-1 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                />
+              </div>
+              <button
+                onClick={handleUpdateData}
+                className="text-white flex justify-center gap-2 bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase"
+                type="button">
+                <Upload />
+                Update
               </button>
             </div>
           </form>
