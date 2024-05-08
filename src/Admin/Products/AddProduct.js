@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
+import emptyBox from "../../Assets/product-image/empty-box.png";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -10,7 +11,9 @@ function AddProduct({ fetchCategory, categoryName }) {
   const [formData, setFormData] = useState({
     prod_name: "",
     prod_price: 0,
+    image: null, // New state to store the selected image file
   });
+  const [imageUrl, setImageUrl] = useState(null); // State to store URL of the uploaded image
 
   useEffect(() => {
     fetchCategory();
@@ -22,19 +25,24 @@ function AddProduct({ fetchCategory, categoryName }) {
 
   const handleProdCat = (e) => {
     setProdCat(e.target.value);
-    console.log("Selected Category:", e.target.value); // Added console.log
+    console.log("Selected Category:", e.target.value);
   };
 
   const handleInsertData = async (e) => {
     e.preventDefault();
     try {
-      console.log("Form Data:", formData); // Added console.log
-      const response = await axios.post("http://localhost:8080/addProduct", {
-        prod_name: formData.prod_name,
-        category_name: prodCat,
-        prod_price: formData.prod_price,
-        quantity: prodQuant,
-      });
+      console.log("Form Data:", formData);
+      const formDataToSend = new FormData(); // Create a FormData object to send both text and image data
+      formDataToSend.append("prod_name", formData.prod_name);
+      formDataToSend.append("category_name", prodCat);
+      formDataToSend.append("prod_price", formData.prod_price);
+      formDataToSend.append("quantity", prodQuant);
+      formDataToSend.append("image", formData.image); // Append the image file to FormData
+
+      const response = await axios.post(
+        "http://localhost:8080/addProduct",
+        formDataToSend
+      );
 
       if (response.status === 200) {
         Swal.fire({
@@ -48,9 +56,11 @@ function AddProduct({ fetchCategory, categoryName }) {
         setFormData({
           prod_name: "",
           prod_price: 0,
+          image: null, // Reset image state after successful submission
         });
         setProdCat("");
         setProdQuant(0);
+        setImageUrl(null); // Reset imageUrl state
 
         window.location.reload();
       }
@@ -75,6 +85,12 @@ function AddProduct({ fetchCategory, categoryName }) {
     }));
   };
 
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, image: e.target.files[0] }); // Update the image state with the selected file
+    const imageUrl = URL.createObjectURL(e.target.files[0]); // Create URL for the selected image
+    setImageUrl(imageUrl); // Set imageUrl state to display the image
+  };
+
   return (
     <>
       <motion.div
@@ -85,7 +101,38 @@ function AddProduct({ fetchCategory, categoryName }) {
         className="border-solid border-2 border-teal-700 pt-1 pb-5 px-6 shadow-xl text-center h-full">
         <h2>Add Product Item</h2>
         <form>
-          <div className="mt-10">
+          <div className="mt-6">
+            <div className="w-full">
+              <label htmlFor="image" className="font-semibold text-lg italic ">
+                Product Image
+              </label>
+              {imageUrl ? (
+                <div className="flex justify-center mt-2">
+                  <div className="w-40 h-40 bg-[#999696] shadow-lg">
+                    <img
+                      src={imageUrl}
+                      alt="Product"
+                      className="max-w-full p-2 h-auto"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex justify-center mt-2">
+                  <div className="w-40 h-40 bg-[#999696] shadow-lg relative">
+                    <img src={emptyBox} alt="Empty Box" />
+                    <p className="text-white absolute bottom-0 w-full text-center uppercase font-semibold pb-1">
+                      upload image
+                    </p>
+                  </div>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="appearance-none mt-5 mb-5"
+              />
+            </div>
             <div className="w-full">
               <label
                 htmlFor="prod_name"

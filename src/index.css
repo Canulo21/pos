@@ -48,7 +48,6 @@ a:hover {
 
 #container {
   padding: 65px 40px 50px;
-  height: 100vh;
 }
 
 .bg {
@@ -127,4 +126,14 @@ a:hover {
     filter: drop-shadow(0 5px 15px 0px rgba(0,0,0,0.6));
 		transform: translatey(0px);
 	}
+}
+
+.prod-img {
+  -webkit-transition: all 0.3s ease-in-out 0s;
+  -moz-transition: all 0.3s ease-in-out 0s;
+  -o-transition: all 0.3s ease-in-out 0s;
+  transition: all 0.3s ease-in-out 0s;
+}
+.prod-img:hover{
+  transform: scale(0.9);
 }

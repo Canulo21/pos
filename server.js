@@ -3,6 +3,8 @@ const mysql = require("mysql");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
 
@@ -15,6 +17,24 @@ const db = mysql.createConnection({
   password: "",
   database: "react_pos",
 });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "src/assets/product-image");
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname); // Get the file extension
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9); // Generate a unique suffix
+    cb(null, file.fieldname + "-" + uniqueSuffix + ext); // Set filename as fieldname-timestamp-suffix.extension
+  },
+});
+
+const upload = multer({
+  storage: storage,
+});
+
+// Serve static files from the 'src/assets/product-image' directory
+app.use("/assets/product-image", express.static("src/assets/product-image"));
 
 //** For Users  **//
 
@@ -246,9 +266,9 @@ app.get("/category", (req, res) => {
 });
 
 app.post("/addCategory", (req, res) => {
-  const { category_name } = req.body;
+  const { category_name, category_color } = req.body;
 
-  if (!category_name) {
+  if (!category_name || !category_color) {
     return res.status(400).json({
       error: "Bad Request",
       details: "All fields are required",
@@ -268,10 +288,10 @@ app.post("/addCategory", (req, res) => {
     }
 
     const queryInsertCategory =
-      "INSERT INTO product_category(category_id, category_name) VALUES (?, ?)";
+      "INSERT INTO product_category(category_id, category_name, category_color) VALUES (?, ?, ?)";
     db.query(
       queryInsertCategory,
-      [newCategoryId, category_name],
+      [newCategoryId, category_name, category_color],
       (err, result) => {
         if (err) {
           console.log(err);
@@ -304,7 +324,7 @@ app.delete("/deleteCategory/:id", (req, res) => {
 // table for my all Products
 app.get("/allProducts", (req, res) => {
   const query =
-    "SELECT products.prod_id, products.prod_name, products.prod_price, product_category.category_name, product_quantity.quantity FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id ORDER BY products.prod_name";
+    "SELECT products.prod_id, products.prod_name, products.prod_price, products.image_filename, product_category.category_name, product_category.category_color, product_quantity.quantity FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id ORDER BY products.prod_name";
   db.query(query, (err, data) => {
     if (err) {
       return res.status(500).json({ Message: "Error" });
@@ -314,11 +334,23 @@ app.get("/allProducts", (req, res) => {
 });
 
 // add Products
-app.post("/addProduct", (req, res) => {
+app.post("/addProduct", upload.single("image"), (req, res) => {
   const { prod_name, category_name, prod_price, quantity } = req.body;
+  // Check if a file was uploaded
+  if (!req.file) {
+    return res.status(400).send("Image is required");
+  }
+
+  const image_filename = req.file.filename;
 
   // Check if any field is empty
-  if (!prod_name || !category_name || !prod_price || !quantity) {
+  if (
+    !prod_name ||
+    !category_name ||
+    !prod_price ||
+    !quantity ||
+    !image_filename
+  ) {
     return res.status(400).send("All fields are required");
   }
 
@@ -356,11 +388,12 @@ app.post("/addProduct", (req, res) => {
           }
 
           const category_id = results[0].category_id;
+          const imageFilename = req.file.filename; // Get the filename of the uploaded image
 
           // Insert data into products table
           db.query(
-            "INSERT INTO products (prod_name, category_id, prod_price) VALUES (?, ?, ?)",
-            [prod_name, category_id, prod_price],
+            "INSERT INTO products (prod_name, category_id, prod_price, image_filename) VALUES (?, ?, ?, ?)",
+            [prod_name, category_id, prod_price, imageFilename],
             (error, results) => {
               if (error) {
                 console.error("Error inserting into products table:", error);

@@ -10,6 +10,7 @@ function ProductCategory() {
   const [showModal, setShowModal] = useState(false);
   const [category, setCategory] = useState([]);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryColor, setCategoryColor] = useState("");
 
   const fetchCategories = async () => {
     try {
@@ -34,6 +35,7 @@ function ProductCategory() {
     try {
       const res = await axios.post("http://localhost:8080/addCategory", {
         category_name: categoryName,
+        category_color: categoryColor,
       });
 
       if (res.data.Status === "Success") {
@@ -62,6 +64,11 @@ function ProductCategory() {
   const handleInputChange = (e) => {
     e.preventDefault();
     setCategoryName(e.target.value);
+  };
+
+  const handleColortChange = (e) => {
+    e.preventDefault();
+    setCategoryColor(e.target.value);
   };
 
   const handleDelete = async (cat_id) => {
@@ -208,6 +215,18 @@ function ProductCategory() {
                   value={categoryName}
                   onChange={handleInputChange}
                   placeholder="eg. bottled"></input>
+              </div>
+              <div className="mt-5">
+                <label className="text-xl font-bold block text-center uppercase mb-5">
+                  Theme Background
+                </label>
+                <input
+                  type="color"
+                  name="category_color"
+                  value={categoryColor}
+                  onChange={handleColortChange}
+                  className="appearance-none block w-full h-16 bg-gray-200 text-gray-700 border border-gray-200 rounded py-1 px-1 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                />
               </div>
               <button
                 onClick={handleInsertData}
