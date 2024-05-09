@@ -7,6 +7,7 @@ import axios from "axios";
 function Products() {
   const [categoryName, setCategoryName] = useState([]);
   const [getProducts, setGetProducts] = useState([]);
+  const [getProdId, setGetProdId] = useState("");
 
   const fetchCategory = async () => {
     try {
@@ -22,6 +23,14 @@ function Products() {
     setGetProducts(AllProducts);
   };
 
+  const handleEditProduct = (productId) => {
+    setGetProdId(productId);
+  };
+
+  const handleUpdateData = () => {
+    setGetProdId(0);
+  };
+
   return (
     <>
       <div id="container" className="relative">
@@ -31,6 +40,9 @@ function Products() {
               <AddProduct
                 fetchCategory={fetchCategory}
                 categoryName={categoryName}
+                getProdId={getProdId}
+                handleUpdateData={handleUpdateData}
+                fetchAllProducts={fetchAllProducts}
               />
             </div>
             <div className="col-span-2">
@@ -41,6 +53,7 @@ function Products() {
             <AllProducts
               fetchAllProducts={fetchAllProducts}
               getProducts={getProducts}
+              onEditProduct={handleEditProduct}
             />
           </div>
         </div>

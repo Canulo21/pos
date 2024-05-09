@@ -119,7 +119,7 @@ function DashBoardCashier() {
               <div className="  h-full">
                 <h3 className="text-center mb-2">Categories</h3>
                 {getProducts.length > 0 ? (
-                  <div className="flex gap-2 justify-center">
+                  <div className="flex flex-wrap gap-2 justify-center">
                     <button
                       className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-1 text-sm rounded focus:outline-none focus:shadow-outline w-36 uppercase button"
                       onClick={() => handleFilter("*")}>

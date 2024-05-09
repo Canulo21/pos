@@ -5,7 +5,13 @@ import emptyBox from "../../Assets/product-image/empty-box.png";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-function AddProduct({ fetchCategory, categoryName }) {
+function AddProduct({
+  fetchCategory,
+  categoryName,
+  getProdId,
+  handleUpdateData,
+  fetchAllProducts,
+}) {
   const [prodCat, setProdCat] = useState("");
   const [prodQuant, setProdQuant] = useState(0);
   const [formData, setFormData] = useState({
@@ -21,11 +27,18 @@ function AddProduct({ fetchCategory, categoryName }) {
 
   const handleProdQuant = (e) => {
     setProdQuant(e.target.value);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      quantity: e.target.value,
+    }));
   };
 
   const handleProdCat = (e) => {
     setProdCat(e.target.value);
-    console.log("Selected Category:", e.target.value);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      category_name: e.target.value,
+    }));
   };
 
   const handleInsertData = async (e) => {
@@ -91,6 +104,75 @@ function AddProduct({ fetchCategory, categoryName }) {
     setImageUrl(imageUrl); // Set imageUrl state to display the image
   };
 
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/viewProduct/${getProdId}`)
+      .then((res) => {
+        const getData = res.data;
+        console.log("data here", getData);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          prod_name: getData.prod_name,
+          prod_price: getData.prod_price,
+          category_name: getData.category_name,
+          quantity: getData.quantity,
+          // Only update the image field if it exists in the received data
+          ...(getData.image_filename && { image: getData.image_filename }),
+        }));
+        setProdQuant(getData.quantity);
+        setProdCat(getData.category_name);
+        const imageUrl = `http://localhost:8080/assets/product-image/${getData.image_filename}`;
+        setImageUrl(imageUrl);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [getProdId]);
+
+  const handleUpdateDataProducts = async () => {
+    try {
+      const formDataToSend = new FormData(); // Create a FormData object to send both text and image data
+      formDataToSend.append("prod_name", formData.prod_name);
+      formDataToSend.append("category_name", prodCat);
+      formDataToSend.append("prod_price", formData.prod_price);
+      formDataToSend.append("quantity", prodQuant);
+      if (formData.image) {
+        // If there's a new image, append it to FormData
+        formDataToSend.append("image", formData.image);
+      }
+
+      const response = await axios.put(
+        `http://localhost:8080/updateProduct/${getProdId}`,
+        formDataToSend
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Updated Successfully!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        fetchAllProducts();
+        setFormData({
+          prod_name: "",
+          prod_price: 0,
+          image: null,
+        });
+        setProdCat("");
+        setProdQuant(0);
+        setImageUrl(null); // Reset imageUrl state
+      }
+    } catch (err) {
+      console.error("Error updating product:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "An unexpected error occurred. Please try again later.",
+      });
+    }
+  };
+
   return (
     <>
       <motion.div
@@ -99,7 +181,7 @@ function AddProduct({ fetchCategory, categoryName }) {
         whileInView={"show"}
         viewport={{ once: true, amount: 0.3 }}
         className="border-solid border-2 border-teal-700 pt-1 pb-5 px-6 shadow-xl text-center h-full">
-        <h2>Add Product Item</h2>
+        {getProdId ? <h2>Update Product Item</h2> : <h2>Add Product Item</h2>}
         <form>
           <div className="mt-6">
             <div className="w-full">
@@ -202,12 +284,24 @@ function AddProduct({ fetchCategory, categoryName }) {
                 />
               </div>
             </div>
-            <button
-              onClick={handleInsertData}
-              className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase"
-              type="button">
-              Save
-            </button>
+            {getProdId ? (
+              <button
+                onClick={() => {
+                  handleUpdateData();
+                  handleUpdateDataProducts();
+                }}
+                className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase"
+                type="button">
+                update
+              </button>
+            ) : (
+              <button
+                onClick={handleInsertData}
+                className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase"
+                type="button">
+                Save
+              </button>
+            )}
           </div>
         </form>
       </motion.div>

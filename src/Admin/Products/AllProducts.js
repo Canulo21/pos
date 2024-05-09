@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 import { fadeIn } from "../../variants";
 import noData from "../../Assets/images/no-data.png";
+import { Edit2, Trash2 } from "lucide-react";
+import axios from "axios";
 
-function AllProducts({ fetchAllProducts, getProducts }) {
+function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
   const [formData, setFormData] = useState({
     prod_id: "",
     prod_name: "",
@@ -14,6 +17,45 @@ function AllProducts({ fetchAllProducts, getProducts }) {
   useEffect(() => {
     fetchAllProducts();
   }, []);
+
+  const handleDeleteProduct = async (prod_id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`http://localhost:8080/deleteProduct/${prod_id}`)
+          .then(() => {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Product has been deleted.",
+              icon: "success",
+            });
+            fetchAllProducts();
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: "error",
+              title: "Delete Failed",
+              text: error.response
+                ? error.response.data.error
+                : "An unexpected error occurred. Please try again later.",
+            });
+          });
+      }
+    });
+  };
+
+  const handleEdit = (productId) => {
+    // console.log("Editing product with ID:", productId);
+    onEditProduct(productId);
+  };
 
   return (
     <>
@@ -33,6 +75,7 @@ function AllProducts({ fetchAllProducts, getProducts }) {
                 <th className="border border-slate-300 p-2">Category</th>
                 <th className="border border-slate-300 p-2">Price</th>
                 <th className="border border-slate-300 p-2">Quantity</th>
+                <th className="border border-slate-300 p-2">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -52,6 +95,24 @@ function AllProducts({ fetchAllProducts, getProducts }) {
                   </td>
                   <td className="border border-slate-300 p-2 uppercase font-bold">
                     {product.quantity}
+                  </td>
+                  <td className="border border-slate-300 p-2 uppercase font-bold">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
+                        onClick={() => {
+                          handleDeleteProduct(product.prod_id);
+                        }}>
+                        <Trash2 />
+                        Delete
+                      </button>
+                      <button
+                        className="bg-[#436850] hover:bg-[#12372a] text-white py-2 px-4 rounded-md flex items-center gap-2"
+                        onClick={() => handleEdit(product.prod_id)}>
+                        <Edit2 />
+                        Edit
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

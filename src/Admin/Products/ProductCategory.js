@@ -5,7 +5,6 @@ import noData from "../../Assets/images/no-cat.png";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
 import { Trash2, Layers3, X, Edit2, Upload } from "lucide-react";
-import { useParams } from "react-router-dom";
 
 function ProductCategory() {
   const [showModal, setShowModal] = useState(false);
@@ -118,7 +117,6 @@ function ProductCategory() {
     const { value } = e.target;
     const formattedValue = value.replace(/\s+/g, "-");
     setCategoryName(formattedValue);
-    console.log(categoryName);
   };
 
   const handleColortChange = (e) => {

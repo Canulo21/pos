@@ -303,7 +303,7 @@ app.post("/addCategory", (req, res) => {
   });
 });
 
-// view Arbs Details
+// view Category
 app.get("/viewCategory/:id", (req, res) => {
   const category_id = req.params.id;
 
@@ -390,6 +390,28 @@ app.get("/allProducts", (req, res) => {
       return res.status(500).json({ Message: "Error" });
     }
     return res.json(data);
+  });
+});
+
+// view product with id
+app.get("/viewProduct/:id", (req, res) => {
+  const id = req.params.id;
+
+  const query = `SELECT products.prod_id, products.prod_name, products.prod_price, products.image_filename, product_category.category_name, product_quantity.quantity FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id WHERE products.prod_id = ?`;
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: err.message });
+    } else {
+      if (result.length === 0) {
+        res.status(404).json({ error: "Products not found" });
+      } else {
+        // Send the member data back to the client
+        res.status(200).json(result[0]);
+      }
+    }
   });
 });
 
@@ -485,6 +507,110 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
       );
     }
   );
+});
+
+// update category
+app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
+  const prod_id = req.params.id; // Corrected from req.params.prod_id
+  const { prod_name, category_name, prod_price, quantity } = req.body;
+
+  // Check if prod_name already exists excluding the current product
+  db.query(
+    "SELECT * FROM products WHERE prod_name = ? AND prod_id != ?",
+    [prod_name, prod_id],
+    (error, results) => {
+      if (error) {
+        console.error("Error checking existing product:", error);
+        return res.status(500).send("Internal server error");
+      }
+
+      if (results.length > 0) {
+        // Product with the same name already exists
+        console.log("Product already exists:", prod_name);
+        return res
+          .status(400)
+          .send("Product with the same name already exists");
+      }
+
+      // Check if any field is empty
+      if (!prod_name || !category_name || !prod_price || !quantity) {
+        return res.status(400).send("All fields are required");
+      }
+
+      // Retrieve category_id for the provided category_name
+      db.query(
+        "SELECT category_id FROM product_category WHERE category_name = ?",
+        [category_name],
+        (error, results) => {
+          if (error) {
+            console.error("Error retrieving category ID:", error);
+            return res.status(500).send("Internal server error");
+          }
+
+          if (results.length === 0) {
+            console.log("Category not found:", category_name);
+            return res.status(404).send("Category not found");
+          }
+
+          const category_id = results[0].category_id;
+
+          // Check if a new image was uploaded
+          let imageFilename = null;
+          if (req.file) {
+            imageFilename = req.file.filename;
+          }
+
+          // Update product details
+          const updateQuery = imageFilename
+            ? "UPDATE products SET prod_name = ?, category_id = ?, prod_price = ?, image_filename = ? WHERE prod_id = ?"
+            : "UPDATE products SET prod_name = ?, category_id = ?, prod_price = ? WHERE prod_id = ?";
+
+          const updateParams = imageFilename
+            ? [prod_name, category_id, prod_price, imageFilename, prod_id]
+            : [prod_name, category_id, prod_price, prod_id];
+
+          db.query(updateQuery, updateParams, (error, results) => {
+            if (error) {
+              console.error("Error updating product:", error);
+              return res.status(500).send("Internal server error");
+            }
+
+            // Update product quantity
+            db.query(
+              "UPDATE product_quantity SET quantity = ? WHERE prod_id = ?",
+              [quantity, prod_id],
+              (error, results) => {
+                if (error) {
+                  console.error("Error updating product quantity:", error);
+                  return res.status(500).send("Internal server error");
+                }
+
+                console.log("Product updated successfully.");
+                res.status(200).send("Product updated successfully");
+              }
+            );
+          });
+        }
+      );
+    }
+  );
+});
+
+// remove Prodcuts
+app.delete("/deleteProduct/:id", (req, res) => {
+  const prod_id = req.params.id;
+
+  const query = "DELETE FROM products WHERE prod_id = ?";
+  db.query(query, [prod_id], (err, result) => {
+    if (err) {
+      console.error("Error deleting data:", err);
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: err.message });
+    } else {
+      res.status(200).json({ message: "Data deleted successfully" });
+    }
+  });
 });
 
 //** End For Products  **//
