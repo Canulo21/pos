@@ -622,7 +622,8 @@ app.delete("/deleteProduct/:id", (req, res) => {
 
 // if quantiy > re_stock
 app.get("/reStock", (req, res) => {
-  const query = "SELECT * FROM product_quantity WHERE re_stock >= quantity";
+  const query =
+    "SELECT products.prod_name, product_quantity.re_stock, product_quantity.quantity  FROM products INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id WHERE product_quantity.re_stock >= product_quantity.quantity";
   db.query(query, (err, data) => {
     if (err) {
       return res.status(500).json({ Message: "Error" });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductCategory from "./ProductCategory";
 import AddProduct from "./AddProduct";
 import AllProducts from "./AllProducts";
@@ -8,6 +8,7 @@ function Products() {
   const [categoryName, setCategoryName] = useState([]);
   const [getProducts, setGetProducts] = useState([]);
   const [getProdId, setGetProdId] = useState("");
+  const [needStock, setNeedStock] = useState("");
 
   const fetchCategory = async () => {
     try {
@@ -31,6 +32,16 @@ function Products() {
     setGetProdId(0);
   };
 
+  const fetchReStock = async () => {
+    const res = await axios.get("http://localhost:8080/reStock");
+    const get = res.data;
+    setNeedStock(get);
+  };
+
+  useEffect(() => {
+    fetchReStock();
+  }, []);
+
   return (
     <>
       <div id="container" className="relative">
@@ -43,6 +54,7 @@ function Products() {
                 getProdId={getProdId}
                 handleUpdateData={handleUpdateData}
                 fetchAllProducts={fetchAllProducts}
+                fetchReStock={fetchReStock}
               />
             </div>
             <div className="col-span-2">
@@ -54,6 +66,7 @@ function Products() {
               fetchAllProducts={fetchAllProducts}
               getProducts={getProducts}
               onEditProduct={handleEditProduct}
+              needStock={needStock}
             />
           </div>
         </div>

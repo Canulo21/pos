@@ -12,8 +12,12 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
-function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
-  const [needStock, setNeedStock] = useState("");
+function AllProducts({
+  fetchAllProducts,
+  getProducts,
+  onEditProduct,
+  needStock,
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(20);
@@ -69,7 +73,6 @@ function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
   };
 
   const handleEdit = (productId) => {
-    // console.log("Editing product with ID:", productId);
     onEditProduct(productId);
   };
 
@@ -200,6 +203,25 @@ function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
           </button>
         </div>
       </motion.div>
+
+      {needStock.length ? (
+        <motion.div
+          variants={fadeIn("up", 0.4)}
+          initial="hidden"
+          whileInView={"show"}
+          viewport={{ once: true, amount: 0.4 }}
+          className="border-solid border-2 border-teal-700 pt-1 pb-3 px-6 shadow-xl text-center h-full w-1/3 mt-5">
+          <h3>Prodcuts Need to Restock</h3>
+          {needStock.map((stock, index) => (
+            <div
+              key={index}
+              className="text-left flex  text-2xl mt-2 text-red-600 ">
+              <p className="uppercase font-semibold">{stock.prod_name} -</p>
+              <p>- {stock.quantity} pices left</p>
+            </div>
+          ))}
+        </motion.div>
+      ) : null}
     </>
   );
 }

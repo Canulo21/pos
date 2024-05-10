@@ -12,6 +12,7 @@ function AddProduct({
   getProdId,
   handleUpdateData,
   fetchAllProducts,
+  fetchReStock,
 }) {
   const [prodCat, setProdCat] = useState("");
   const [prodQuant, setProdQuant] = useState(0);
@@ -112,6 +113,7 @@ function AddProduct({
     setProdCat("");
     setProdQuant(0);
     setImageUrl(null); // Reset imageUrl state
+    setProdReStock(0);
   };
 
   const handleInputChange = (e) => {
@@ -181,6 +183,7 @@ function AddProduct({
           timer: 1500,
         });
         fetchAllProducts();
+        fetchReStock();
         setFormData({
           prod_name: "",
           prod_price: 0,
