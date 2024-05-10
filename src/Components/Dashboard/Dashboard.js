@@ -1,10 +1,23 @@
 import React from "react";
+import ProductReStockReport from "../../Admin/Products/ProductReStockReport";
+import ActiveUserReport from "../../Admin/UserNav/ActiveUserReport";
+import PendingUserReport from "../../Admin/UserNav/PendingUserReport";
 
 function Dashboard() {
   return (
     <>
       <div id="container">
-        <h1 className="text-center">This is Dashboard</h1>
+        <div className="grid grid-cols-6 gap-5">
+          <div className="col-span-1">
+            <ProductReStockReport />
+          </div>
+          <div className="col-span-1">
+            <ActiveUserReport />
+          </div>
+          <div className="col-span-1">
+            <PendingUserReport />
+          </div>
+        </div>
       </div>
     </>
   );

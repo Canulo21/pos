@@ -128,13 +128,34 @@ a:hover {
 	}
 }
 
-.prod-img {
+.prod-img,
+.dashboard-icon,
+.dashboard-icon svg  {
   -webkit-transition: all 0.3s ease-in-out 0s;
   -moz-transition: all 0.3s ease-in-out 0s;
   -o-transition: all 0.3s ease-in-out 0s;
   transition: all 0.3s ease-in-out 0s;
+}
+.prod-img {
   filter: drop-shadow(0 3px 6px rgba(0,0,0, .6));
 }
 .prod-img:hover{
+  transform: scale(0.9);
+}
+
+table tbody tr:hover {
+  background-color: #b2bfa6;
+  color: #fff;
+}
+
+.dashboard-icon {
+  position: relative;
+  top: 0;
+}
+.dashboard-icon:hover {
+  top: -10px;
+  box-shadow: 0 12px 12px rgba(0, 0, 0, .16);
+}
+.dashboard-icon svg:hover {
   transform: scale(0.9);
 }

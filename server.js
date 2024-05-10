@@ -384,7 +384,7 @@ app.delete("/deleteCategory/:id", (req, res) => {
 // table for my all Products
 app.get("/allProducts", (req, res) => {
   const query =
-    "SELECT products.prod_id, products.prod_name, products.prod_price, products.image_filename, product_category.category_name, product_category.category_color, product_quantity.quantity FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id ORDER BY products.prod_name";
+    "SELECT products.prod_id, products.prod_name, products.prod_price, products.image_filename, product_category.category_name, product_category.category_color, product_quantity.quantity, product_quantity.re_stock FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id ORDER BY products.prod_name";
   db.query(query, (err, data) => {
     if (err) {
       return res.status(500).json({ Message: "Error" });
@@ -397,7 +397,7 @@ app.get("/allProducts", (req, res) => {
 app.get("/viewProduct/:id", (req, res) => {
   const id = req.params.id;
 
-  const query = `SELECT products.prod_id, products.prod_name, products.prod_price, products.image_filename, product_category.category_name, product_quantity.quantity FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id WHERE products.prod_id = ?`;
+  const query = `SELECT products.prod_id, products.prod_name, products.prod_price, products.image_filename, product_category.category_name, product_quantity.quantity, product_quantity.re_stock FROM products INNER JOIN product_category ON products.category_id = product_category.category_id INNER JOIN product_quantity ON products.prod_id = product_quantity.prod_id WHERE products.prod_id = ?`;
 
   db.query(query, [id], (err, result) => {
     if (err) {
@@ -417,7 +417,7 @@ app.get("/viewProduct/:id", (req, res) => {
 
 // add Products
 app.post("/addProduct", upload.single("image"), (req, res) => {
-  const { prod_name, category_name, prod_price, quantity } = req.body;
+  const { prod_name, category_name, prod_price, quantity, re_stock } = req.body;
   // Check if a file was uploaded
   if (!req.file) {
     return res.status(400).send("Image is required");
@@ -431,7 +431,8 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
     !category_name ||
     !prod_price ||
     !quantity ||
-    !image_filename
+    !image_filename ||
+    !re_stock
   ) {
     return res.status(400).send("All fields are required");
   }
@@ -486,8 +487,8 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
 
               // Insert data into product_quantity table
               db.query(
-                "INSERT INTO product_quantity (prod_id, quantity) VALUES (?, ?)",
-                [prod_id, quantity],
+                "INSERT INTO product_quantity (prod_id, quantity, re_stock) VALUES (?, ?, ?)",
+                [prod_id, quantity, re_stock],
                 (error, results) => {
                   if (error) {
                     console.error(
@@ -512,7 +513,7 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
 // update category
 app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
   const prod_id = req.params.id; // Corrected from req.params.prod_id
-  const { prod_name, category_name, prod_price, quantity } = req.body;
+  const { prod_name, category_name, prod_price, quantity, re_stock } = req.body;
 
   // Check if prod_name already exists excluding the current product
   db.query(
@@ -533,7 +534,13 @@ app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
       }
 
       // Check if any field is empty
-      if (!prod_name || !category_name || !prod_price || !quantity) {
+      if (
+        !prod_name ||
+        !category_name ||
+        !prod_price ||
+        !quantity ||
+        !re_stock
+      ) {
         return res.status(400).send("All fields are required");
       }
 
@@ -577,8 +584,8 @@ app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
 
             // Update product quantity
             db.query(
-              "UPDATE product_quantity SET quantity = ? WHERE prod_id = ?",
-              [quantity, prod_id],
+              "UPDATE product_quantity SET quantity = ? , re_stock=? WHERE prod_id = ?",
+              [quantity, re_stock, prod_id],
               (error, results) => {
                 if (error) {
                   console.error("Error updating product quantity:", error);
@@ -610,6 +617,17 @@ app.delete("/deleteProduct/:id", (req, res) => {
     } else {
       res.status(200).json({ message: "Data deleted successfully" });
     }
+  });
+});
+
+// if quantiy > re_stock
+app.get("/reStock", (req, res) => {
+  const query = "SELECT * FROM product_quantity WHERE re_stock >= quantity";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
   });
 });
 

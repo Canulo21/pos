@@ -25,7 +25,7 @@ function ActiveUsers({ fetchActiveUser, activeUser }) {
             <div
               key={index}
               className="flex text-xl font-medium justify-center gap-2 pt-2">
-              <p>
+              <p className="uppercase">
                 {d.fname} {d.mname} {d.lname} -
               </p>
               <p className="uppercase font-bold text-lime-600">{d.role}</p>

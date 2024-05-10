@@ -3,16 +3,32 @@ import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { fadeIn } from "../../variants";
 import noData from "../../Assets/images/no-data.png";
-import { Edit2, Trash2 } from "lucide-react";
+import {
+  ArrowBigLeft,
+  ArrowBigRight,
+  Edit2,
+  SearchIcon,
+  Trash2,
+} from "lucide-react";
 import axios from "axios";
 
 function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
-  const [formData, setFormData] = useState({
-    prod_id: "",
-    prod_name: "",
-    category_name: "",
-    quantity: "",
-  });
+  const [needStock, setNeedStock] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(20);
+
+  // Get current products
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = getProducts
+    .filter((product) =>
+      product.prod_name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(indexOfFirstProduct, indexOfLastProduct);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   useEffect(() => {
     fetchAllProducts();
@@ -66,7 +82,17 @@ function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
         viewport={{ once: true, amount: 0.3 }}
         className="border-solid border-2 border-teal-700 py-1 px-6 shadow-xl text-center h-full">
         <h2>Products</h2>
-        {getProducts.length > 0 ? (
+        <div className="mb-4 flex items-center gap-2 justify-end">
+          <SearchIcon />
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-1"
+          />
+        </div>
+        {currentProducts.length > 0 ? (
           <table className="table-auto mt-2 bg-[#f6fdef] shadow-md px-8 pt-6 pb-8 mb-4 w-full border-collapse border border-slate-400 p-5">
             <thead>
               <tr>
@@ -79,7 +105,7 @@ function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
               </tr>
             </thead>
             <tbody>
-              {getProducts.map((product, index) => (
+              {currentProducts.map((product, index) => (
                 <tr key={index}>
                   <td className="border border-slate-300 p-2 uppercase font-bold">
                     {product.prod_id}
@@ -93,7 +119,12 @@ function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
                   <td className="border border-slate-300 p-2 uppercase font-bold">
                     {product.prod_price}
                   </td>
-                  <td className="border border-slate-300 p-2 uppercase font-bold">
+                  <td
+                    className={`border border-slate-300 p-2 uppercase font-bold  ${
+                      product.re_stock >= product.quantity
+                        ? "text-red-600 text-2xl"
+                        : "text-green-700"
+                    }`}>
                     {product.quantity}
                   </td>
                   <td className="border border-slate-300 p-2 uppercase font-bold">
@@ -136,6 +167,38 @@ function AllProducts({ fetchAllProducts, getProducts, onEditProduct }) {
             </p>
           </motion.div>
         )}
+        <div className="flex justify-center mt-4 mb-2 gap-2">
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l flex gap-2">
+            <ArrowBigLeft />
+            Prev
+          </button>
+          {Array.from({
+            length: Math.ceil(getProducts.length / productsPerPage),
+          }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => paginate(index + 1)}
+              className={`${
+                currentPage === index + 1
+                  ? "bg-blue-700"
+                  : "bg-blue-500 hover:bg-blue-700"
+              } text-white font-bold py-2 px-4 rounded`}>
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={
+              currentPage === Math.ceil(getProducts.length / productsPerPage)
+            }
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r flex gap-2">
+            Next
+            <ArrowBigRight />
+          </button>
+        </div>
       </motion.div>
     </>
   );

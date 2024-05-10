@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import noData from "../../Assets/images/no-cat.png";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
-import { Trash2, Layers3, X, Edit2, Upload } from "lucide-react";
+import { Trash2, Layers3, X, Edit2, Upload, UploadIcon } from "lucide-react";
 
 function ProductCategory() {
   const [showModal, setShowModal] = useState(false);
@@ -292,8 +292,9 @@ function ProductCategory() {
               </div>
               <button
                 onClick={handleInsertData}
-                className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase"
+                className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase flex gap-2 justify-center"
                 type="button">
+                <UploadIcon />
                 Save
               </button>
             </div>
