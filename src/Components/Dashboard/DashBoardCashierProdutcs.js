@@ -17,13 +17,6 @@ function DashBoardCashierProdutcs() {
       const res = await axios.get("http://localhost:8080/allProducts");
       const allProduct = res.data;
       setGetProducts(allProduct);
-      // Initialize Isotope after fetching products
-      setIsotope(
-        new Isotope(".filter-section", {
-          itemSelector: ".filter-item",
-          layoutMode: "fitRows",
-        })
-      );
     } catch (err) {
       console.error("Error fetching products:", err);
     }
@@ -33,35 +26,41 @@ function DashBoardCashierProdutcs() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (getProducts.length > 0) {
+      setIsotope(
+        new Isotope(".filter-section", {
+          itemSelector: ".filter-item",
+          layoutMode: "fitRows",
+        })
+      );
+    }
+  }, [getProducts]);
+
   const handleFilter = (filterValue) => {
     if (isotope && isotope.filteredItems) {
-      // Check if isotope and filteredItems are defined
       if (isotope.filteredItems.length > 0) {
         isotope.arrange({ filter: filterValue });
       } else {
-        // Reset Isotope layout if no items are present
         isotope.layout();
       }
     }
   };
 
-  // Extract unique category names
   const uniqueCategories = [
     ...new Set(getProducts.map((product) => product.category_name)),
   ];
 
   const handleAddToCart = (productId) => {
-    // Check if the productId is already in the array
     if (!selectedProductIds.includes(productId)) {
-      // If not, add it to the array
       setSelectedProductIds([...selectedProductIds, productId]);
     } else {
-      // If it is already selected, remove it from the array
       setSelectedProductIds(
         selectedProductIds.filter((id) => id !== productId)
       );
     }
   };
+
   return (
     <>
       <div id="container">

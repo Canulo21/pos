@@ -3,8 +3,11 @@ import axios from "axios";
 import { MinusIcon, PlusIcon, ShoppingBasketIcon } from "lucide-react";
 
 function DashBoardCashierAddtoCart({ selectedProductIds }) {
+  const [getDiscount, setGetDiscount] = useState(0);
   const [products, setProducts] = useState([]);
   const [productQuantities, setProductQuantities] = useState({});
+  const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("");
+  const [orderTentativePrice, setOrderTentativePrice] = useState(0);
 
   const fetchProducts = async () => {
     try {
@@ -64,11 +67,27 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
     });
   };
 
+  // for discount
+  const fetchDiscount = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/viewDiscountPost");
+      const allDiscount = res.data;
+      setGetDiscount(allDiscount);
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    fetchDiscount();
+  }, []);
+
+  const handleDiscountCategoryChange = (e) => {
+    setSelectedDiscountCategory(e.target.value);
+  };
+
   return (
     <>
       <div className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit mt-5">
-        <h2 className="text-center">Add to Cart</h2>
-
+        <h3 className="text-center mb-5">Add to Cart</h3>
         {products.length > 0 ? (
           <div>
             <table className="w-full add-cart">
@@ -118,6 +137,30 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
                 ))}
               </tbody>
             </table>
+            <div className="discount-wrap  border-solid border-y-2 border-lime-700 mt-5 pb-3">
+              <div className="mt-3">
+                <label className="text-sm font-bold block text-left uppercase mb-1 italic">
+                  Discount Category
+                </label>
+                <select
+                  className="appearance-none block uppercase w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight font-semibold focus:outline-none focus:bg-white focus:border-gray-500"
+                  name="status"
+                  value={selectedDiscountCategory}
+                  onChange={handleDiscountCategoryChange}>
+                  <option value={""}>None</option>
+                  {getDiscount.map((discount, index) => (
+                    <option key={index} value={discount.title}>
+                      {discount.title} - {discount.discount}%
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="total-wraper mt-5">
+              <p className="text-2xl font-semibold">
+                Total: {orderTentativePrice}
+              </p>
+            </div>
             <div>
               <button className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase flex justify-center gap-2">
                 <ShoppingBasketIcon />

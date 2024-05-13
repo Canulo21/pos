@@ -645,6 +645,38 @@ app.get("/viewDiscount", (req, res) => {
   });
 });
 
+app.get("/viewDiscountPost", (req, res) => {
+  const query = "SELECT * FROM order_discount WHERE status='Post'";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
+// view Discount
+app.get("/viewDiscount/:id", (req, res) => {
+  const id = req.params.id;
+
+  const query = `SELECT * FROM order_discount WHERE id = ?`;
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: err.message });
+    } else {
+      if (result.length === 0) {
+        res.status(404).json({ error: "Discount not found" });
+      } else {
+        // Send the member data back to the client
+        res.status(200).json(result[0]);
+      }
+    }
+  });
+});
+
 // add discount
 app.post("/addDiscount", (req, res) => {
   const { title, discount, status } = req.body;
@@ -681,6 +713,40 @@ app.delete("/deleteDiscount/:id", (req, res) => {
     } else {
       res.status(200).json({ message: "Data deleted successfully" });
     }
+  });
+});
+
+// update discount
+app.put("/updateDiscount/:id", (req, res) => {
+  const id = req.params.id;
+  const { data } = req.body;
+  const { title, discount, status } = data;
+
+  if (!title || !discount) {
+    return res.status(400).json({
+      error: "Bad Request",
+      details: "All fields are required",
+    });
+  }
+
+  const query =
+    "UPDATE order_discount SET title=?, discount=?, status=? WHERE id=?";
+
+  db.query(query, [title, discount, status, id], (queryError, result) => {
+    if (queryError) {
+      console.error("updateError", queryError);
+      return res.status(500).json({
+        error: "Bad Request",
+        details: queryError.message,
+      });
+    }
+    if (!result.affectedRows) {
+      return res.status(404).json({
+        error: "Not found.",
+      });
+    }
+
+    return res.json({ updated: true, result });
   });
 });
 
