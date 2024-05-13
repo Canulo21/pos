@@ -634,6 +634,58 @@ app.get("/reStock", (req, res) => {
 
 //** End For Products  **//
 
+// for Discounts
+app.get("/viewDiscount", (req, res) => {
+  const query = "SELECT * FROM order_discount";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
+// add discount
+app.post("/addDiscount", (req, res) => {
+  const { title, discount, status } = req.body;
+  const query =
+    "INSERT INTO order_discount (title, discount, status) VALUES (?, ?, ?)";
+
+  if (!title || !discount) {
+    return res.status(400).json({
+      error: "Bad Request",
+      details: "All fields are required",
+    });
+  }
+
+  db.query(query, [title, discount, status], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.status(200).json({ Status: "Success" });
+  });
+});
+
+// remove discount
+app.delete("/deleteDiscount/:id", (req, res) => {
+  const id = req.params.id;
+
+  const query = "DELETE FROM order_discount WHERE id = ?";
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting data:", err);
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: err.message });
+    } else {
+      res.status(200).json({ message: "Data deleted successfully" });
+    }
+  });
+});
+
+// end For Discount
+
 // Start server
 app.listen(8080, () => {
   console.log(`Server is running on port 8080`);

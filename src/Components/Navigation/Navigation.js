@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./Navigation.css";
 import { NavLink } from "react-router-dom";
-import { Menu, SquareX } from "lucide-react";
+import { Menu, Percent, SquareX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo from "../../Assets/images/logo.png";
@@ -81,6 +81,10 @@ function Navigation({ onLogout, isAdmin }) {
             <NavLink to={"/products"}>
               <ShoppingBag />
               Products
+            </NavLink>
+            <NavLink to={"/discount"}>
+              <Percent />
+              Discounts
             </NavLink>
             <NavLink to={"/reports"}>
               <LineChart />

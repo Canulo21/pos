@@ -70,48 +70,61 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
         <h2 className="text-center">Add to Cart</h2>
 
         {products.length > 0 ? (
-          <table className="w-full add-cart">
-            <thead>
-              <tr>
-                <th className="text-center pb-3">Item</th>
-                <th className="text-center pb-3">Quantity</th>
-                <th className="text-center pb-3">Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product, index) => (
-                <tr key={index} className="text-center uppercase font-semibold">
-                  <td>{product.prod_name}</td>
-                  <td className="counter flex gap-2 justify-center">
-                    <button
-                      className="bg-red-500 hover:bg-[#a93737] text-white px-1"
-                      onClick={() => handleMinus(product.prod_id)}>
-                      <MinusIcon />
-                    </button>
-                    <input
-                      className="w-10 border-2 border-solid border-slate-400 text-center"
-                      value={productQuantities[product.prod_id]}
-                      onChange={(e) => handleInput(e, product.prod_id)}></input>
-                    <button
-                      className="bg-blue-500 hover:bg-[#2e5491]  text-white px-1"
-                      onClick={() => handlePlus(product.prod_id)}>
-                      <PlusIcon />
-                    </button>
-                  </td>
-                  <td>
-                    P{product.prod_price} x {productQuantities[product.prod_id]}
-                    <span className="px-2">=</span>
-                    {(
-                      product.prod_price * productQuantities[product.prod_id]
-                    ).toLocaleString("en-PH", {
-                      style: "currency",
-                      currency: "PHP",
-                    })}
-                  </td>
+          <div>
+            <table className="w-full add-cart">
+              <thead>
+                <tr>
+                  <th className="text-center pb-3">Item</th>
+                  <th className="text-center pb-3">Quantity</th>
+                  <th className="text-center pb-3">Price</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {products.map((product, index) => (
+                  <tr
+                    key={index}
+                    className="text-center uppercase font-semibold">
+                    <td>{product.prod_name}</td>
+                    <td className="counter flex gap-2 justify-center">
+                      <button
+                        className="bg-red-500 hover:bg-[#a93737] text-white px-1"
+                        onClick={() => handleMinus(product.prod_id)}>
+                        <MinusIcon />
+                      </button>
+                      <input
+                        className="w-10 border-2 border-solid border-slate-400 text-center"
+                        value={productQuantities[product.prod_id]}
+                        onChange={(e) =>
+                          handleInput(e, product.prod_id)
+                        }></input>
+                      <button
+                        className="bg-blue-500 hover:bg-[#2e5491]  text-white px-1"
+                        onClick={() => handlePlus(product.prod_id)}>
+                        <PlusIcon />
+                      </button>
+                    </td>
+                    <td>
+                      P{product.prod_price} x{" "}
+                      {productQuantities[product.prod_id]}
+                      <span className="px-2">=</span>
+                      {(
+                        product.prod_price * productQuantities[product.prod_id]
+                      ).toLocaleString("en-PH", {
+                        style: "currency",
+                        currency: "PHP",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div>
+              <button className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase flex justify-center gap-2">
+                <ShoppingBasketIcon />
+                Placed Order
+              </button>
+            </div>
+          </div>
         ) : (
           <div>
             <p className="text-center text-3xl italic opacity-40">
@@ -119,12 +132,6 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
             </p>
           </div>
         )}
-        <div>
-          <button className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase flex justify-center gap-2">
-            <ShoppingBasketIcon />
-            Placed Order
-          </button>
-        </div>
       </div>
     </>
   );
