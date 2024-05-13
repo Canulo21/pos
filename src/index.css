@@ -148,6 +148,11 @@ table tbody tr:hover {
   color: #fff;
 }
 
+table.add-cart tr:hover {
+  background: transparent;
+  color: inherit;
+}
+
 .dashboard-icon {
   position: relative;
   top: 0;
