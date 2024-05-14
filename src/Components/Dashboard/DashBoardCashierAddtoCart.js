@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { MinusIcon, PlusIcon, ShoppingBasketIcon } from "lucide-react";
 
 function DashBoardCashierAddtoCart({ selectedProductIds }) {
-  const [getDiscount, setGetDiscount] = useState(0);
+  const [getDiscount, setGetDiscount] = useState([]);
+  const [getTheDiscount, setGetTheDiscount] = useState(0);
   const [products, setProducts] = useState([]);
   const [productQuantities, setProductQuantities] = useState({});
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("");
-  const [orderTentativePrice, setOrderTentativePrice] = useState(0);
 
   const fetchProducts = async () => {
     try {
@@ -61,10 +62,13 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
 
   const handlePlus = (productId) => {
     const currentQuantity = productQuantities[productId];
-    setProductQuantities({
-      ...productQuantities,
-      [productId]: currentQuantity + 1,
-    });
+    const product = products.find((p) => p.prod_id === productId);
+    if (currentQuantity < product.quantity) {
+      setProductQuantities({
+        ...productQuantities,
+        [productId]: currentQuantity + 1,
+      });
+    }
   };
 
   // for discount
@@ -73,7 +77,9 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
       const res = await axios.get("http://localhost:8080/viewDiscountPost");
       const allDiscount = res.data;
       setGetDiscount(allDiscount);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error fetching discounts:", err);
+    }
   };
 
   useEffect(() => {
@@ -81,7 +87,104 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
   }, []);
 
   const handleDiscountCategoryChange = (e) => {
-    setSelectedDiscountCategory(e.target.value);
+    const selectedTitle = e.target.value;
+    const selectedDiscount = getDiscount.find(
+      (discount) => discount.title === selectedTitle
+    );
+    setSelectedDiscountCategory(selectedTitle);
+    if (selectedDiscount) {
+      setGetTheDiscount(selectedDiscount.discount);
+    } else {
+      setGetTheDiscount(0); // Reset to 0 if 'None' is selected or no discount found
+    }
+  };
+
+  const totalPrice = products.reduce((total, product) => {
+    return total + product.prod_price * productQuantities[product.prod_id];
+  }, 0);
+
+  const totalPriceWDiscount = totalPrice - (totalPrice * getTheDiscount) / 100;
+
+  // for placeOrder
+
+  const handlePlacedOrder = async () => {
+    try {
+      const currentDate = new Date();
+      const formattedDate = currentDate.toLocaleDateString("en-US");
+      const formattedTime = currentDate.toLocaleTimeString("en-US");
+
+      // Map products with quantities and prod_ids
+      const items = products.map((product) => ({
+        name: product.prod_name,
+        quantity: productQuantities[product.prod_id],
+        price: product.prod_price,
+        prod_id: product.prod_id, // Include prod_id
+      }));
+
+      const receiptItems = items.map(
+        (item) =>
+          `<p>${item.name} ${item.price} x ${item.quantity} = ${(
+            item.price * item.quantity
+          ).toLocaleString("en-PH", {
+            style: "currency",
+            currency: "PHP",
+          })}</p>`
+      );
+
+      Swal.fire({
+        title: "Receipt",
+        html: `
+          <div class="time-wrap">
+            <p>Date: ${formattedDate}</p>
+            <p>Time: ${formattedTime}</p>
+          </div>
+      
+          <hr>
+          <div class="item-wrap">
+            ${receiptItems.join("")}
+          </div>
+
+          <hr>
+          <div class="price-wrap">
+            <p>Total: ${totalPriceWDiscount}</p>
+            <p>Discount: ${getTheDiscount}%</p>
+            <p>Discounted Total: ${totalPriceWDiscount}</p>
+          </div>
+        `,
+        confirmButtonText: "Close",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axios
+            .post("http://localhost:8080/report", {
+              date: formattedDate,
+              time: formattedTime,
+              items,
+              selectedDiscountCategory,
+              totalDiscount: getTheDiscount,
+              discountedTotal: totalPriceWDiscount,
+            })
+            .then((response) => {
+              if (response.status === 201) {
+                // Show success message after successful order placement
+                Swal.fire({
+                  icon: "success",
+                  title: "Order Placed Successfully!",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+                window.location.reload();
+              } else {
+                console.error("Failed to save order:", response.data.error);
+              }
+            })
+            .catch((error) => {
+              console.error("Error saving order:", error);
+            });
+        }
+      });
+    } catch (error) {
+      console.error("Error saving order:", error);
+    }
   };
 
   return (
@@ -112,10 +215,12 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
                       </button>
                       <input
                         className="w-10 border-2 border-solid border-slate-400 text-center"
+                        type="number"
                         value={productQuantities[product.prod_id]}
-                        onChange={(e) =>
-                          handleInput(e, product.prod_id)
-                        }></input>
+                        onChange={(e) => handleInput(e, product.prod_id)}
+                        min="1"
+                        max={product.quantity} // Set the max attribute dynamically
+                      />
                       <button
                         className="bg-blue-500 hover:bg-[#2e5491]  text-white px-1"
                         onClick={() => handlePlus(product.prod_id)}>
@@ -158,11 +263,24 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
             </div>
             <div className="total-wraper mt-5">
               <p className="text-2xl font-semibold">
-                Total: {orderTentativePrice}
+                Total:{" "}
+                {totalPrice.toLocaleString("en-PH", {
+                  style: "currency",
+                  currency: "PHP",
+                })}
+              </p>
+              <p className="text-2xl font-semibold pt-2">
+                Discounted Total:{" "}
+                {totalPriceWDiscount.toLocaleString("en-PH", {
+                  style: "currency",
+                  currency: "PHP",
+                })}
               </p>
             </div>
             <div>
-              <button className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase flex justify-center gap-2">
+              <button
+                className="text-white bg-[#436850] hover:bg-[#12372a] font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 w-full uppercase flex justify-center gap-2"
+                onClick={handlePlacedOrder}>
                 <ShoppingBasketIcon />
                 Placed Order
               </button>

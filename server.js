@@ -279,7 +279,6 @@ app.post("/addCategory", (req, res) => {
     "SELECT MAX(category_id) AS max_category_id FROM product_category";
   db.query(queryMaxCategoryId, (err, result) => {
     if (err) {
-      console.log(err);
       return res.status(500).json({ Message: "Error" });
     }
     let newCategoryId = 100; // Default start value
@@ -294,7 +293,6 @@ app.post("/addCategory", (req, res) => {
       [newCategoryId, category_name, category_color],
       (err, result) => {
         if (err) {
-          console.log(err);
           return res.status(500).json({ Message: "Error" });
         }
         return res.status(200).json({ Status: "Success" });
@@ -449,7 +447,7 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
 
       if (results.length > 0) {
         // Product with the same name already exists
-        console.log("Product already exists:", prod_name);
+
         return res
           .status(400)
           .send("Product with the same name already exists");
@@ -466,7 +464,6 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
           }
 
           if (results.length === 0) {
-            console.log("Category not found:", category_name);
             return res.status(404).send("Category not found");
           }
 
@@ -498,7 +495,6 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
                     return res.status(500).send("Internal server error");
                   }
 
-                  console.log("Data inserted successfully.");
                   res.status(200).send("Product added successfully");
                 }
               );
@@ -527,7 +523,7 @@ app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
 
       if (results.length > 0) {
         // Product with the same name already exists
-        console.log("Product already exists:", prod_name);
+
         return res
           .status(400)
           .send("Product with the same name already exists");
@@ -555,7 +551,6 @@ app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
           }
 
           if (results.length === 0) {
-            console.log("Category not found:", category_name);
             return res.status(404).send("Category not found");
           }
 
@@ -592,7 +587,6 @@ app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
                   return res.status(500).send("Internal server error");
                 }
 
-                console.log("Product updated successfully.");
                 res.status(200).send("Product updated successfully");
               }
             );
@@ -692,7 +686,6 @@ app.post("/addDiscount", (req, res) => {
 
   db.query(query, [title, discount, status], (err, result) => {
     if (err) {
-      console.log(err);
       return res.status(500).json({ Message: "Error" });
     }
     return res.status(200).json({ Status: "Success" });
@@ -751,6 +744,90 @@ app.put("/updateDiscount/:id", (req, res) => {
 });
 
 // end For Discount
+
+// start for order report
+app.post("/report", (req, res) => {
+  try {
+    const orderData = req.body;
+
+    // Construct a new Date object using components from the original date string
+    const dateComponents = orderData.date.split("/");
+    const formattedDate = new Date(
+      parseInt(dateComponents[2]), // Year
+      parseInt(dateComponents[0]) - 1, // Month (subtract 1 because months are 0-indexed)
+      parseInt(dateComponents[1]) // Day
+    );
+
+    // Format the date as 'YYYY-MM-DD'
+    const formattedDateString = formattedDate.toISOString().split("T")[0];
+
+    // Insert the order data into the MySQL database
+    db.query(
+      "INSERT INTO orders SET ?",
+      {
+        date: formattedDateString,
+        time: orderData.time,
+        discounted_total: orderData.discountedTotal,
+        selected_discount_category: orderData.selectedDiscountCategory,
+        total_discount: orderData.totalDiscount,
+      },
+      (error, results) => {
+        if (error) {
+          console.error("Error saving order:", error);
+          res.status(500).json({ error: "Failed to save order" });
+          return;
+        }
+
+        // Get the ID of the inserted order
+        const orderId = results.insertId;
+
+        // Insert order items into the MySQL database
+        const items = orderData.items.map((item) => [
+          orderId,
+          item.name,
+          item.quantity,
+          item.price,
+          item.prod_id, // Include prod_id when constructing items array
+        ]);
+
+        db.query(
+          "INSERT INTO order_items (order_id, name, quantity, price, prod_id) VALUES ?",
+          [items],
+          (error, results) => {
+            if (error) {
+              console.error("Error saving order items:", error);
+              res.status(500).json({ error: "Failed to save order items" });
+              return;
+            }
+
+            // Update product_quantity table to deduct purchased quantity
+            orderData.items.forEach((item) => {
+              db.query(
+                "UPDATE product_quantity SET quantity = quantity - ? WHERE prod_id = ?",
+                [item.quantity, item.prod_id],
+                (error, results) => {
+                  if (error) {
+                    console.error("Error updating product quantity:", error);
+                    return;
+                  }
+                }
+              );
+            });
+
+            res
+              .status(201)
+              .json({ message: "Order and items saved successfully" });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error("Error saving order:", error);
+    res.status(500).json({ error: "Failed to save order" });
+  }
+});
+
+// end
 
 // Start server
 app.listen(8080, () => {
