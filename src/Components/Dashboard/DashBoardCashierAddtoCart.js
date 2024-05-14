@@ -18,7 +18,7 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
       }
 
       const productRequests = selectedProductIds.map((productId) =>
-        axios.get(`http://localhost:8080/viewProduct/${productId}`)
+        axios.get(`/viewProduct/${productId}`)
       );
 
       const responses = await Promise.all(productRequests);
@@ -74,7 +74,7 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
   // for discount
   const fetchDiscount = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/viewDiscountPost");
+      const res = await axios.get("/viewDiscountPost");
       const allDiscount = res.data;
       setGetDiscount(allDiscount);
     } catch (err) {
@@ -155,7 +155,7 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .post("http://localhost:8080/report", {
+            .post("/report", {
               date: formattedDate,
               time: formattedTime,
               items,

@@ -38,7 +38,7 @@ function App() {
     setIsAdmin(false);
 
     try {
-      await axios.post("http://localhost:8080/logout", { userId: userId });
+      await axios.post("logout", { userId: userId });
     } catch (error) {
       console.error("Error logging out:", error);
     }

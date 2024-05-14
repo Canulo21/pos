@@ -21,7 +21,7 @@ function RegistrationForm() {
     e.preventDefault();
     setErrors(validateValues(formData));
     try {
-      await axios.post("http://localhost:8080/register", formData);
+      await axios.post("/register", formData);
       Swal.fire({
         position: "center",
         icon: "success",

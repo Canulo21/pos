@@ -18,7 +18,7 @@ function LoginForm({ isLogin, isRole, isId }) {
 
     try {
       // Send login request to the server
-      const response = await axios.post("http://localhost:8080/login", {
+      const response = await axios.post("/login", {
         username,
         password,
       });

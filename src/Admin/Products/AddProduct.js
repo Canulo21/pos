@@ -64,10 +64,7 @@ function AddProduct({
       formDataToSend.append("re_stock", prodReStock);
       formDataToSend.append("image", formData.image); // Append the image file to FormData
 
-      const response = await axios.post(
-        "http://localhost:8080/addProduct",
-        formDataToSend
-      );
+      const response = await axios.post("/addProduct", formDataToSend);
 
       if (response.status === 200) {
         Swal.fire({
@@ -132,7 +129,7 @@ function AddProduct({
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/viewProduct/${getProdId}`)
+      .get(`/viewProduct/${getProdId}`)
       .then((res) => {
         const getData = res.data;
         console.log("data here", getData);
@@ -149,7 +146,7 @@ function AddProduct({
         setProdQuant(getData.quantity);
         setProdReStock(getData.re_stock);
         setProdCat(getData.category_name);
-        const imageUrl = `http://localhost:8080/assets/product-image/${getData.image_filename}`;
+        const imageUrl = `/assets/product-image/${getData.image_filename}`;
         setImageUrl(imageUrl);
       })
       .catch((err) => {
@@ -171,7 +168,7 @@ function AddProduct({
       }
 
       const response = await axios.put(
-        `http://localhost:8080/updateProduct/${getProdId}`,
+        `/updateProduct/${getProdId}`,
         formDataToSend
       );
       if (response.status === 200) {

@@ -50,7 +50,7 @@ function AllProducts({
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:8080/deleteProduct/${prod_id}`)
+          .delete(`/deleteProduct/${prod_id}`)
           .then(() => {
             Swal.fire({
               title: "Deleted!",

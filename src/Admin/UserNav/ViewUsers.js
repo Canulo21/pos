@@ -14,7 +14,7 @@ function ViewUsers() {
 
   const fetchActiveUser = () => {
     try {
-      axios.get("http://localhost:8080/activeUsers").then((res) => {
+      axios.get("/activeUsers").then((res) => {
         const pendingData = res.data;
         setActiveUser(pendingData);
       });
@@ -23,7 +23,7 @@ function ViewUsers() {
 
   const fetchPendingUser = () => {
     try {
-      axios.get("http://localhost:8080/pendingUsers").then((res) => {
+      axios.get("/pendingUsers").then((res) => {
         const pendingData = res.data;
         setFetchUser(pendingData);
       });
@@ -32,7 +32,7 @@ function ViewUsers() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/viewUsers");
+      const res = await axios.get("/viewUsers");
       const userData = res.data;
       setGetUsers(userData);
     } catch (err) {
@@ -56,7 +56,7 @@ function ViewUsers() {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:8080/deleteUser/${userId}`)
+          .delete(`/deleteUser/${userId}`)
           .then(() => {
             Swal.fire({
               title: "Deleted!",

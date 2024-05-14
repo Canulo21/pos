@@ -5,7 +5,7 @@ import axios from "axios";
 function ProductReStockReport() {
   const [isStock, setIstock] = useState(0);
   const fetchAllProducts = async () => {
-    const res = await axios.get("http://localhost:8080/reStock");
+    const res = await axios.get("/reStock");
     const get = res.data.length;
     setIstock(get);
   };

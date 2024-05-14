@@ -7,7 +7,7 @@ function ActiveUserReport() {
 
   const fetchActiveUser = () => {
     try {
-      axios.get("http://localhost:8080/activeUsers").then((res) => {
+      axios.get("/activeUsers").then((res) => {
         const pendingData = res.data.length;
         setActiveUser(pendingData);
       });

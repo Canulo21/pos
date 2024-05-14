@@ -9,7 +9,7 @@ import noData from "../../Assets/images/no-pending.png";
 function PendingUser({ fetchPendingUser, fetchUser }) {
   const handleAccepted = async (userId) => {
     try {
-      await axios.put(`http://localhost:8080/acceptUser/${userId}`, {
+      await axios.put(`/acceptUser/${userId}`, {
         status: "accepted",
       });
 
@@ -37,7 +37,7 @@ function PendingUser({ fetchPendingUser, fetchUser }) {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:8080/deleteUser/${userId}`)
+          .delete(`/deleteUser/${userId}`)
           .then(() => {
             Swal.fire({
               title: "Deleted!",

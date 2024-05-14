@@ -2,6 +2,7 @@
   "name": "pos",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -25,7 +26,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start --host 0.0.0.0",
     "server": "nodemon server.js",
     "build": "react-scripts build",
     "dev": "concurrently \"npm run server\" \"npm run start\"",

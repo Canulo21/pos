@@ -14,7 +14,7 @@ function DashBoardCashierProdutcs() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/allProducts");
+      const res = await axios.get("/allProducts");
       const allProduct = res.data;
       setGetProducts(allProduct);
     } catch (err) {
@@ -87,7 +87,7 @@ function DashBoardCashierProdutcs() {
                               background: products.category_color,
                             }}>
                             <img
-                              src={`http://localhost:8080/assets/product-image/${products.image_filename}`}
+                              src={`/assets/product-image/${products.image_filename}`}
                               alt={products.prod_name}
                               className="filter p-2 prod-img"></img>
                           </div>

@@ -12,14 +12,14 @@ function Products() {
 
   const fetchCategory = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/category");
+      const res = await axios.get("/category");
       const getCategory = res.data;
       setCategoryName(getCategory);
     } catch (err) {}
   };
 
   const fetchAllProducts = async () => {
-    const res = await axios.get("http://localhost:8080/allProducts");
+    const res = await axios.get("/allProducts");
     const AllProducts = res.data;
     setGetProducts(AllProducts);
   };
@@ -33,7 +33,7 @@ function Products() {
   };
 
   const fetchReStock = async () => {
-    const res = await axios.get("http://localhost:8080/reStock");
+    const res = await axios.get("/reStock");
     const get = res.data;
     setNeedStock(get);
   };

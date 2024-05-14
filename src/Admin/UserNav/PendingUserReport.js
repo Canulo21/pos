@@ -6,7 +6,7 @@ function PendingUserReport() {
   const [fetchUser, setFetchUser] = useState(0);
   const fetchPendingUser = () => {
     try {
-      axios.get("http://localhost:8080/pendingUsers").then((res) => {
+      axios.get("/pendingUsers").then((res) => {
         const pendingData = res.data.length;
         setFetchUser(pendingData);
       });

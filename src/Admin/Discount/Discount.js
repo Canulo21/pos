@@ -21,7 +21,7 @@ function Discount() {
 
   const fetchDiscount = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/viewDiscount");
+      const res = await axios.get("/viewDiscount");
       const allDiscount = res.data;
       setGetData(allDiscount);
     } catch (err) {}
@@ -33,7 +33,7 @@ function Discount() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/viewDiscount/${getId}`)
+      .get(`/viewDiscount/${getId}`)
       .then((res) => {
         const getData = res.data;
         setFormData(getData); // Update formData with the received data
@@ -55,7 +55,7 @@ function Discount() {
     }
 
     try {
-      const res = await axios.post("http://localhost:8080/addDiscount", {
+      const res = await axios.post("/addDiscount", {
         title: discountTitle,
         discount: parseFloat(discountNumber),
         status: discountStatus,
@@ -99,7 +99,7 @@ function Discount() {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:8080/deleteDiscount/${id}`)
+          .delete(`/deleteDiscount/${id}`)
           .then(() => {
             Swal.fire({
               title: "Deleted!",
@@ -168,12 +168,9 @@ function Discount() {
   const handleUpdateData = async (e) => {
     e.preventDefault();
     try {
-      const updatedFormData = await axios.put(
-        `http://localhost:8080/updateDiscount/${getId}`,
-        {
-          data: formData,
-        }
-      );
+      const updatedFormData = await axios.put(`/updateDiscount/${getId}`, {
+        data: formData,
+      });
       if (updatedFormData.data.updated) {
         Swal.fire({
           position: "center",

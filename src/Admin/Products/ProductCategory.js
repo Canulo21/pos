@@ -20,7 +20,7 @@ function ProductCategory() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/viewCategory/${getId}`)
+      .get(`/viewCategory/${getId}`)
       .then((res) => {
         const getData = res.data;
         setFormData(getData); // Update formData with the received data
@@ -40,12 +40,9 @@ function ProductCategory() {
   const handleUpdateData = async (e) => {
     e.preventDefault();
     try {
-      const updatedFormData = await axios.put(
-        `http://localhost:8080/updateCategory/${getId}`,
-        {
-          data: formData,
-        }
-      );
+      const updatedFormData = await axios.put(`/updateCategory/${getId}`, {
+        data: formData,
+      });
       if (updatedFormData.data.updated) {
         Swal.fire({
           position: "center",
@@ -64,7 +61,7 @@ function ProductCategory() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/category");
+      const res = await axios.get("/category");
       const dataCategory = res.data;
       setCategory(dataCategory);
     } catch (err) {}
@@ -84,7 +81,7 @@ function ProductCategory() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:8080/addCategory", {
+      const res = await axios.post("/addCategory", {
         category_name: categoryName,
         category_color: categoryColor,
       });
@@ -136,7 +133,7 @@ function ProductCategory() {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:8080/deleteCategory/${cat_id}`)
+          .delete(`/deleteCategory/${cat_id}`)
           .then(() => {
             Swal.fire({
               title: "Deleted!",

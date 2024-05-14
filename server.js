@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 
 const app = express();
+const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -508,7 +509,7 @@ app.post("/addProduct", upload.single("image"), (req, res) => {
 
 // update category
 app.put("/updateProduct/:id", upload.single("image"), (req, res) => {
-  const prod_id = req.params.id; // Corrected from req.params.prod_id
+  const prod_id = req.params.id;
   const { prod_name, category_name, prod_price, quantity, re_stock } = req.body;
 
   // Check if prod_name already exists excluding the current product
@@ -827,9 +828,13 @@ app.post("/report", (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("Hello, world!");
+});
+
 // end
 
 // Start server
-app.listen(8080, () => {
-  console.log(`Server is running on port 8080`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
 });
