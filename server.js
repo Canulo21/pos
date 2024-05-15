@@ -756,7 +756,10 @@ app.post("/report", (req, res) => {
     const formattedDate = new Date(
       parseInt(dateComponents[2]), // Year
       parseInt(dateComponents[0]) - 1, // Month (subtract 1 because months are 0-indexed)
-      parseInt(dateComponents[1]) // Day
+      parseInt(dateComponents[1]), // Day
+      12,
+      0,
+      0 // Set the time to noon to avoid timezone issues
     );
 
     // Format the date as 'YYYY-MM-DD'
@@ -833,6 +836,67 @@ app.get("/", (req, res) => {
 });
 
 // end
+
+// income
+app.get("/dailyIncome", (req, res) => {
+  const query = `
+    SELECT DATE(date) AS date, SUM(discounted_total) AS total_income
+    FROM orders
+    WHERE DATE(date) = CURDATE()
+    GROUP BY DATE(date)
+  `;
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(
+      data[0] || {
+        date: new Date().toISOString().split("T")[0],
+        total_income: 0,
+      }
+    );
+  });
+});
+
+app.get("/weeklyIncome", (req, res) => {
+  const query = `
+    SELECT YEARWEEK(date, 1) AS week, SUM(discounted_total) AS total_income
+    FROM orders
+    WHERE YEARWEEK(date, 1) = YEARWEEK(CURDATE(), 1)
+    GROUP BY YEARWEEK(date, 1)
+  `;
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(
+      data[0] || {
+        week: `${new Date().getFullYear()}-${new Date().getWeek()}`,
+        total_income: 0,
+      }
+    );
+  });
+});
+
+app.get("/monthlyIncome", (req, res) => {
+  const query = `
+    SELECT DATE_FORMAT(date, '%Y-%m') AS month, SUM(discounted_total) AS total_income
+    FROM orders
+    WHERE DATE_FORMAT(date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    GROUP BY DATE_FORMAT(date, '%Y-%m')
+  `;
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(
+      data[0] || {
+        month: new Date().toISOString().slice(0, 7),
+        total_income: 0,
+      }
+    );
+  });
+});
 
 // Start server
 app.listen(port, "0.0.0.0", () => {
