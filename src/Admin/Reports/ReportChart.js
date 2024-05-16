@@ -129,7 +129,7 @@ function ReportChart() {
             onClick={handleSearch}
             className="text-white text-sm bg-[#436850] hover:bg-[#12372a] font-medium py-1 px-2 rounded focus:outline-none focus:shadow-outline flex items-center gap-2 uppercase">
             <SearchIcon />
-            Search
+            <span>Search</span>
           </button>
         </div>
       </div>

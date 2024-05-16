@@ -138,13 +138,13 @@ function AllProducts({
                           handleDeleteProduct(product.prod_id);
                         }}>
                         <Trash2 />
-                        Delete
+                        <span>Delete</span>
                       </button>
                       <button
                         className="bg-[#436850] hover:bg-[#12372a] text-white py-2 px-4 rounded-md flex items-center gap-2"
                         onClick={() => handleEdit(product.prod_id)}>
                         <Edit2 />
-                        Edit
+                        <span>Edit</span>
                       </button>
                     </div>
                   </td>
@@ -210,12 +210,12 @@ function AllProducts({
           initial="hidden"
           whileInView={"show"}
           viewport={{ once: true, amount: 0.4 }}
-          className="border-solid border-2 border-teal-700 pt-1 pb-3 px-6 shadow-xl text-center h-full w-1/3 mt-5">
+          className="border-solid border-2 border-teal-700 pt-1 pb-3 px-6 shadow-xl text-center h-full w-full mt-5">
           <h3>Prodcuts Need to Restock</h3>
           {needStock.map((stock, index) => (
             <div
               key={index}
-              className="text-left flex  text-2xl mt-2 text-red-600 ">
+              className=" flex justify-center text-2xl mt-2 text-red-600 ">
               <p className="uppercase font-semibold">{stock.prod_name} -</p>
               <p>- {stock.quantity} pices left</p>
             </div>

@@ -239,7 +239,7 @@ function Discount() {
                           className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
                           onClick={() => handleDelete(d.id)}>
                           <Trash2 />
-                          Delete
+                          <span>Delete</span>
                         </button>
                         <button
                           className="bg-[#436850] hover:bg-[#12372a] text-white py-2 px-4 rounded-md flex items-center gap-2"
@@ -248,7 +248,7 @@ function Discount() {
                             setGetId(d.id);
                           }}>
                           <Edit2 />
-                          Edit
+                          <span>Edit</span>
                         </button>
                       </div>
                     </td>

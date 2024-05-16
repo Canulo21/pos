@@ -46,8 +46,8 @@ function Products() {
     <>
       <div id="container" className="relative">
         <div className="prod-bg">
-          <div className="grid grid-cols-5 gap-5">
-            <div className="col-span-3">
+          <div className="grid grid-cols-1 xxl:grid-cols-5 gap-5">
+            <div className="col-span-1 xxl:col-span-3">
               <AddProduct
                 fetchCategory={fetchCategory}
                 categoryName={categoryName}
@@ -57,7 +57,7 @@ function Products() {
                 fetchReStock={fetchReStock}
               />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-1 xxl:col-span-2">
               <ProductCategory />
             </div>
           </div>

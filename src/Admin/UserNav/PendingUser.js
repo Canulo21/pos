@@ -114,13 +114,13 @@ function PendingUser({ fetchPendingUser, fetchUser }) {
                         className="bg-[#2296c5] text-white hover:text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#0a3a4e]"
                         onClick={() => handleAccepted(d.id)}>
                         <Check />
-                        Accept
+                        <span>Accept</span>
                       </button>
                       <button
                         className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
                         onClick={() => handleDelete(d.id)}>
                         <Trash2 />
-                        Delete
+                        <span>Delete</span>
                       </button>
                     </div>
                   </td>

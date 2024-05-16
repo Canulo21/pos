@@ -121,7 +121,19 @@
     height: 100%;
     justify-content: flex-end;
   }
+
   @media(max-width : 860px){
+    .hamburger {
+      left: -10px;
+    }
+    .hamburger.active {
+      margin-left: 280px;
+    }
+    #container {
+      padding: 75px 20px 50px;
+    }
+  }
+  /* @media(max-width : 860px){
     .sidebar{
       height: auto;
       width: 70px;
@@ -151,7 +163,7 @@
       opacity: 1;
       visibility: visible;
     }
-  }
+  } */
   
   .sidebar a.active,.sidebar > a:hover {
     --accent-color: #58a399;

@@ -82,14 +82,14 @@ function ViewUsers() {
     <>
       <div id="container">
         <div className="bg-user">
-          <div className="grid grid-cols-5 mt-5 gap-5">
-            <div className="col-span-3 h-full">
+          <div className="grid grid-cols-1 xxl:grid-cols-5 mt-5 gap-5">
+            <div className="col-span-1 xxl:col-span-3 h-full">
               <PendingUser
                 fetchPendingUser={fetchPendingUser}
                 fetchUser={fetchUser}
               />
             </div>
-            <div className="col-span-2 h-full">
+            <div className="col-span-1 xxl:col-span-2 h-full">
               <ActiveUsers
                 fetchActiveUser={fetchActiveUser}
                 activeUser={activeUser}
@@ -142,7 +142,7 @@ function ViewUsers() {
                           className="bg-red-500 text-white py-2 px-4 rounded-md flex items-center gap-2 hover:bg-[#a93737]"
                           onClick={() => handleDelete(d.id)}>
                           <Trash2 />
-                          Delete
+                          <span>Delete</span>
                         </button>
                       </div>
                     </td>
