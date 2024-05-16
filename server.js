@@ -831,10 +831,6 @@ app.post("/report", (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello, world!");
-});
-
 // end
 
 // income
@@ -895,6 +891,29 @@ app.get("/monthlyIncome", (req, res) => {
         total_income: 0,
       }
     );
+  });
+});
+
+// most sales items
+app.get("/mostSold", (req, res) => {
+  const query =
+    "SELECT prod_id, NAME, SUM(quantity) AS total_sold FROM order_items GROUP BY prod_id, NAME ORDER BY total_sold DESC LIMIT 5";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
+app.get("/lessSold", (req, res) => {
+  const query =
+    "SELECT prod_id, NAME, SUM(quantity) AS total_sold FROM order_items GROUP BY prod_id, NAME ORDER BY total_sold ASC LIMIT 5";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
   });
 });
 

@@ -137,7 +137,7 @@ function DashBoardCashierProdutcs() {
                 </motion.div>
               )}
             </div>
-            <div className="col-span-2">
+            <div className="col-span-2 ">
               <div className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit">
                 <h3 className="text-center mb-2">Categories</h3>
                 {getProducts.length > 0 ? (
