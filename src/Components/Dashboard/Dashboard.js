@@ -10,6 +10,7 @@ import MostSaleProducts from "../../Admin/Reports/MostSaleProducts";
 import LessSalesProducts from "../../Admin/Reports/LessSalesProducts";
 import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
+import ReportChartByYear from "../../Admin/Reports/reportChartByYear";
 
 function Dashboard() {
   return (
@@ -50,26 +51,38 @@ function Dashboard() {
             <MonthlyIncome />
           </div>
         </motion.div>
-        <motion.div
-          variants={fadeIn("up", 0.8)}
-          initial="hidden"
-          whileInView={"show"}
-          viewport={{ once: true, amount: 0.3 }}
-          className="w-full flex flex-col xxl:flex-row gap-5 mt-5">
-          <div className="w-full xxl:w-3/4">
-            <DailyIncome />
-          </div>
+        <div
+          className="w-full flex flex-col xxl:flex-row gap-5 mt-5"
+          style={{ alignItems: "normal" }}>
+          <motion.div
+            variants={fadeIn("up", 0.4)}
+            initial="hidden"
+            whileInView={"show"}
+            viewport={{ once: true, amount: 0.3 }}
+            className="w-full xxl:w-3/4 dashboard-icon">
+            <ReportChartByYear />
+          </motion.div>
           <div className="w-full xxl:w-1/4">
-            <div className="flex flex-col xxl:flex-col ssl:flex-row  gap-5">
-              <div className="w-full">
+            <div className="h-full flex flex-col xxl:flex-col ssl:flex-row  gap-5">
+              <motion.div
+                variants={fadeIn("up", 1)}
+                initial="hidden"
+                whileInView={"show"}
+                viewport={{ once: true, amount: 0.3 }}
+                className="w-full h-1/2">
                 <MostSaleProducts />
-              </div>
-              <div className="w-full">
+              </motion.div>
+              <motion.div
+                variants={fadeIn("up", 1.2)}
+                initial="hidden"
+                whileInView={"show"}
+                viewport={{ once: true, amount: 0.3 }}
+                className="w-full h-1/2">
                 <LessSalesProducts />
-              </div>
+              </motion.div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </>
   );

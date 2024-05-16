@@ -9,6 +9,7 @@ import ViewUsers from "./Admin/UserNav/ViewUsers";
 import DashBoardCashier from "./Components/Dashboard/DashBoardCashier";
 import Products from "./Admin/Products/Products";
 import Discount from "./Admin/Discount/Discount";
+import Reports from "./Admin/Reports/Reports";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
@@ -75,6 +76,7 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/products" element={<Products />} />
                     <Route path="/discount" element={<Discount />} />
+                    <Route path="/reports" element={<Reports />} />
                   </>
                 ) : (
                   <>

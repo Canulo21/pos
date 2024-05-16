@@ -834,6 +834,63 @@ app.post("/report", (req, res) => {
 // end
 
 // income
+app.get("/chartReport", (req, res) => {
+  const query =
+    "SELECT DATE(DATE) AS DATE, SUM(discounted_total) AS total_income FROM orders GROUP BY DATE(DATE)";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
+// filter by date
+app.get("/searchDateChart", (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
+
+  const query = `
+    SELECT DATE(date) AS date,
+           SUM(discounted_total) AS total_income
+    FROM orders
+    WHERE date >= ? AND date <= ?
+    GROUP BY DATE(date)
+  `;
+
+  // Execute the query with the provided start and end dates
+  db.query(query, [startDate, endDate], (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
+// filter by year
+app.get("/searchDateChartByYear", (req, res) => {
+  const year = req.query.year; // Assuming year is passed as a query parameter
+
+  // SQL query to fetch total income for each month of the specified year
+  const query = `
+    SELECT 
+      YEAR(date) AS year,
+      MONTH(date) AS month,
+      SUM(discounted_total) AS total_income
+    FROM orders
+    WHERE YEAR(date) = ?
+    GROUP BY YEAR(date), MONTH(date)
+  `;
+
+  // Execute the query with the provided year
+  db.query(query, [year], (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
 app.get("/dailyIncome", (req, res) => {
   const query = `
     SELECT DATE(date) AS date, SUM(discounted_total) AS total_income

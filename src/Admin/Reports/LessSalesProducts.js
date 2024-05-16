@@ -24,8 +24,8 @@ function LessSalesProducts() {
 
   return (
     <>
-      <div className="bg-slate-50 py-2 px-2 shadow-lg relative dashboard-icon text-center">
-        <div className="flex items-center gap-2 mb-2 justify-center">
+      <div className="bg-slate-50 py-2 px-2 shadow-lg relative dashboard-icon text-center h-full">
+        <div className="flex items-center gap-2 mb-6 justify-center">
           <h5>Less Sold Items</h5>
           <TrendingDownIcon size={40} color="#c51c1c" />
         </div>
