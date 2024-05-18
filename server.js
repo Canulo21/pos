@@ -974,6 +974,32 @@ app.get("/lessSold", (req, res) => {
   });
 });
 
+// get report for sales
+app.get("/reportSalesLogs", (req, res) => {
+  const query = `
+    SELECT 
+    a.name, 
+    a.quantity, 
+    (a.quantity * a.price) AS total_price, 
+    ROUND(((a.quantity * a.price) * (100 - b.total_discount) / 100), 2) AS discounted_price, 
+    b.date 
+FROM 
+    order_items AS a 
+INNER JOIN 
+    orders AS b ON a.order_id = b.id 
+ORDER BY 
+    b.date DESC
+  `;
+
+  // Execute the query with the provided year
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(data);
+  });
+});
+
 // Start server
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on http://0.0.0.0:${port}`);

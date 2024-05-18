@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { fadeIn } from "../../variants";
 import ReportChart from "./ReportChart";
 import ReportChartByYear from "./reportChartByYear";
+import OrderLogs from "./OrderLogs";
 
 function Reports() {
   return (
@@ -26,6 +27,14 @@ function Reports() {
             <ReportChartByYear />
           </motion.div>
         </div>
+        <motion.div
+          variants={fadeIn("up", 0.6)}
+          initial="hidden"
+          whileInView={"show"}
+          viewport={{ once: true, amount: 0.3 }}
+          className="mt-10">
+          <OrderLogs />
+        </motion.div>
       </div>
     </>
   );

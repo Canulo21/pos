@@ -65,8 +65,8 @@ function DashBoardCashierProdutcs() {
     <>
       <div id="container">
         <div className="prod-bg">
-          <div className="grid grid-cols-6 gap-3">
-            <div className="col-span-4">
+          <div className="w-full flex">
+            <div className="xxl:w-3/4 w-1/2">
               {getProducts.length > 0 ? (
                 <div className="">
                   <div className="filter-section">
@@ -137,7 +137,7 @@ function DashBoardCashierProdutcs() {
                 </motion.div>
               )}
             </div>
-            <div className="col-span-2 ">
+            <div className="xxl:w-1/4 w-1/2">
               <div className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit">
                 <h3 className="text-center mb-2">Categories</h3>
                 {getProducts.length > 0 ? (

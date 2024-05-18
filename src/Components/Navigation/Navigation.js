@@ -97,6 +97,10 @@ function Navigation({ onLogout, isAdmin }) {
               <LayoutDashboard />
               Dashboard
             </NavLink>
+            <NavLink to={"/reports"}>
+              <LineChart />
+              Reports
+            </NavLink>
           </>
         )}
         <div className="mr-1 ml-1 holder-logout">

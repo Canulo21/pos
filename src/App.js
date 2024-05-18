@@ -10,44 +10,54 @@ import DashBoardCashier from "./Components/Dashboard/DashBoardCashier";
 import Products from "./Admin/Products/Products";
 import Discount from "./Admin/Discount/Discount";
 import Reports from "./Admin/Reports/Reports";
+import CashierReport from "./Admin/Reports/CashierReport";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [userId, setUserId] = useState("");
+  const [user, setUser] = useState([]);
 
   // Check if the user is logged in on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedIsAdmin = localStorage.getItem("isAdmin");
+    const storedUser = localStorage.getItem("user");
 
     if (token) {
       setIsLogin(true);
       setIsAdmin(storedIsAdmin === "true");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
     }
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = (userData) => {
     setIsLogin(true);
+    console.log("here", userData);
+    setUser(userData);
     localStorage.setItem("token", "your_token_here");
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("isAdmin", userData.role === "Admin");
   };
 
   const handleLogout = async () => {
     localStorage.removeItem("token");
     localStorage.removeItem("isAdmin");
+    localStorage.removeItem("user");
     setIsLogin(false);
     setIsAdmin(false);
 
     try {
-      await axios.post("logout", { userId: userId });
+      await axios.post("logout", { userId: user.id });
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
 
-  const handleRole = (Role) => {
-    setIsAdmin(Role === "Admin");
-    localStorage.setItem("isAdmin", Role === "Admin");
+  const handleRole = (role) => {
+    setIsAdmin(role === "Admin");
+    localStorage.setItem("isAdmin", role === "Admin");
   };
 
   return (
@@ -64,7 +74,7 @@ function App() {
                   <LoginForm
                     isLogin={handleLogin}
                     isRole={handleRole}
-                    isId={setUserId}
+                    setGetUser={handleLogin}
                   />
                 }
               />
@@ -81,6 +91,10 @@ function App() {
                 ) : (
                   <>
                     <Route path="/dashboard" element={<DashBoardCashier />} />
+                    <Route
+                      path="/reports"
+                      element={<CashierReport user={user} />}
+                    />
                   </>
                 )}
               </>
