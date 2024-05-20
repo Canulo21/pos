@@ -7,7 +7,7 @@ import { fadeIn } from "../../variants";
 import Isotope from "isotope-layout";
 import DashBoardCashierAddtoCart from "./DashBoardCashierAddtoCart";
 
-function DashBoardCashierProdutcs() {
+function DashBoardCashierProdutcs({ user }) {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [getProducts, setGetProducts] = useState([]);
   const [isotope, setIsotope] = useState(null);
@@ -172,6 +172,7 @@ function DashBoardCashierProdutcs() {
               </div>
               <DashBoardCashierAddtoCart
                 selectedProductIds={selectedProductIds}
+                user={user}
               />
             </div>
           </div>

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DashBoardCashierProdutcs from "./DashBoardCashierProdutcs";
 
-function DashBoardCashier() {
+function DashBoardCashier({ user }) {
   return (
     <>
-      <DashBoardCashierProdutcs />
+      <DashBoardCashierProdutcs user={user} />
     </>
   );
 }

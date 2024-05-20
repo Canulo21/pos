@@ -3,12 +3,13 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { MinusIcon, PlusIcon, ShoppingBasketIcon } from "lucide-react";
 
-function DashBoardCashierAddtoCart({ selectedProductIds }) {
+function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
   const [getDiscount, setGetDiscount] = useState([]);
   const [getTheDiscount, setGetTheDiscount] = useState(0);
   const [products, setProducts] = useState([]);
   const [productQuantities, setProductQuantities] = useState({});
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("");
+  const [getCashier, setGetCashier] = useState("");
 
   const fetchProducts = async () => {
     try {
@@ -43,7 +44,8 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedProductIds]);
+    setGetCashier(`${user.fname} ${user.lname}`);
+  }, [selectedProductIds, user]);
 
   const handleInput = async (e, productId) => {
     const quantity = parseInt(e.target.value);
@@ -150,8 +152,14 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
             <p>Discount: ${getTheDiscount}%</p>
             <p>Discounted Total: ${totalPriceWDiscount}</p>
           </div>
+            <hr>
+          <div class="under-wrap">
+            <p>Cashier:  ${getCashier}</p>
+          </div>
+            <hr>
+      
         `,
-        confirmButtonText: "Close",
+        confirmButtonText: "Done",
       }).then((result) => {
         if (result.isConfirmed) {
           axios
@@ -162,6 +170,8 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
               selectedDiscountCategory,
               totalDiscount: getTheDiscount,
               discountedTotal: totalPriceWDiscount,
+              fname: user.fname,
+              lname: user.lname,
             })
             .then((response) => {
               if (response.status === 201) {
@@ -172,7 +182,6 @@ function DashBoardCashierAddtoCart({ selectedProductIds }) {
                   showConfirmButton: false,
                   timer: 1500,
                 });
-                window.location.reload();
               } else {
                 console.error("Failed to save order:", response.data.error);
               }

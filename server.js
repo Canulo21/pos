@@ -7,7 +7,7 @@ const multer = require("multer");
 const path = require("path");
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = 8080;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -774,6 +774,8 @@ app.post("/report", (req, res) => {
         discounted_total: orderData.discountedTotal,
         selected_discount_category: orderData.selectedDiscountCategory,
         total_discount: orderData.totalDiscount,
+        fname: orderData.fname, // Add fname
+        lname: orderData.lname, // Add lname
       },
       (error, results) => {
         if (error) {
@@ -912,6 +914,12 @@ app.get("/dailyIncome", (req, res) => {
 });
 
 app.get("/weeklyIncome", (req, res) => {
+  const today = new Date();
+  const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+  const weekNumber = Math.ceil(
+    ((today - firstDayOfYear) / 86400000 + firstDayOfYear.getDay() + 1) / 7
+  );
+
   const query = `
     SELECT YEARWEEK(date, 1) AS week, SUM(discounted_total) AS total_income
     FROM orders
@@ -924,7 +932,7 @@ app.get("/weeklyIncome", (req, res) => {
     }
     return res.json(
       data[0] || {
-        week: `${new Date().getFullYear()}-${new Date().getWeek()}`,
+        week: `${today.getFullYear()}-${weekNumber}`,
         total_income: 0,
       }
     );
@@ -997,6 +1005,30 @@ ORDER BY
       return res.status(500).json({ Message: "Error" });
     }
     return res.json(data);
+  });
+});
+
+// get cashier sales
+app.get("/cashierDailyIncome", (req, res) => {
+  const cashierName = req.query.cashierName; // Assuming you're passing the cashier's name as a query parameter
+  const query = `
+    SELECT DATE(DATE) AS DATE, 
+           SUM(discounted_total) AS total_income, 
+           CONCAT(fname, ' ', lname) AS Cashier
+    FROM orders
+    WHERE DATE(DATE) = CURDATE() AND CONCAT(fname, ' ', lname) = ?
+    GROUP BY DATE(DATE), Cashier
+  `;
+  db.query(query, [cashierName], (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(
+      data[0] || {
+        date: new Date().toISOString().split("T")[0],
+        total_income: 0,
+      }
+    );
   });
 });
 

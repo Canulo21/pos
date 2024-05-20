@@ -10,7 +10,7 @@ import DashBoardCashier from "./Components/Dashboard/DashBoardCashier";
 import Products from "./Admin/Products/Products";
 import Discount from "./Admin/Discount/Discount";
 import Reports from "./Admin/Reports/Reports";
-import CashierReport from "./Admin/Reports/CashierReport";
+import CashierReport from "./Cashier/CashierReport";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
@@ -34,8 +34,6 @@ function App() {
 
   const handleLogin = (userData) => {
     setIsLogin(true);
-    console.log("here", userData);
-    setUser(userData);
     localStorage.setItem("token", "your_token_here");
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("isAdmin", userData.role === "Admin");
@@ -90,7 +88,10 @@ function App() {
                   </>
                 ) : (
                   <>
-                    <Route path="/dashboard" element={<DashBoardCashier />} />
+                    <Route
+                      path="/dashboard"
+                      element={<DashBoardCashier user={user} />}
+                    />
                     <Route
                       path="/reports"
                       element={<CashierReport user={user} />}

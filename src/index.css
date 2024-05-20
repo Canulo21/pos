@@ -187,25 +187,30 @@ hr {
   margin-bottom: 20px;
 }
 .time-wrap p,
-.price-wrap p {
+.price-wrap p,
+.under-wrap p {
   font-weight: 500;
 }
 .price-wrap {
   margin-top: 15px;
+  margin-bottom: 30px;
 }
-.price-wrap p {
+.price-wrap p,
+.under-wrap p {
   text-align: left;
 }
 .item-wrap {
   display: block;
   
 }
-.item-wrap p {
+.item-wrap p,
+.under-wrap p {
   text-transform: uppercase;
 }
 .item-wrap p + p {
   margin-top: 2px;
 }
+
 
 @media only screen and (max-width: 1025px)  {
   button span {
