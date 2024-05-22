@@ -7,7 +7,7 @@ import { fadeIn } from "../../variants";
 import Isotope from "isotope-layout";
 import DashBoardCashierAddtoCart from "./DashBoardCashierAddtoCart";
 
-function DashBoardCashierProdutcs({ ...props }) {
+function DashBoardCashierProdutcs({ user }) {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [getProducts, setGetProducts] = useState([]);
   const [isotope, setIsotope] = useState(null);
@@ -140,7 +140,12 @@ function DashBoardCashierProdutcs({ ...props }) {
               )}
             </div>
             <div className="xxl:w-1/4 w-1/2">
-              <div className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit">
+              <motion.div
+                variants={fadeIn("left", 0.4)}
+                initial="hidden"
+                whileInView={"show"}
+                viewport={{ once: true, amount: 0.4 }}
+                className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit">
                 <h3 className="text-center mb-2">Categories</h3>
                 {getProducts.length > 0 ? (
                   <div className="flex flex-wrap gap-2 justify-center">
@@ -171,10 +176,10 @@ function DashBoardCashierProdutcs({ ...props }) {
                     </p>
                   </div>
                 )}
-              </div>
+              </motion.div>
               <DashBoardCashierAddtoCart
                 selectedProductIds={selectedProductIds}
-                user={props.user}
+                user={user}
               />
             </div>
           </div>

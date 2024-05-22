@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { motion } from "framer-motion";
+import { fadeIn } from "../../variants";
 import { MinusIcon, PlusIcon, ShoppingBasketIcon } from "lucide-react";
 
 function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
@@ -183,6 +185,16 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
                   showConfirmButton: false,
                   timer: 1500,
                 });
+
+                // Clear the cart after placing order
+                setProducts([]);
+                setProductQuantities({});
+                setSelectedDiscountCategory("");
+                setGetTheDiscount(0);
+
+                setTimeout(() => {
+                  document.location.reload();
+                }, 500);
               } else {
                 console.error("Failed to save order:", response.data.error);
               }
@@ -215,7 +227,12 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
 
   return (
     <>
-      <div className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit mt-5">
+      <motion.div
+        variants={fadeIn("left", 0.8)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: true, amount: 0.4 }}
+        className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit mt-5">
         <h3 className="text-center mb-5">Add to Cart</h3>
         {products.length > 0 ? (
           <div>
@@ -319,7 +336,7 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
             </p>
           </div>
         )}
-      </div>
+      </motion.div>
     </>
   );
 }

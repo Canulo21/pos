@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import noData from "../../Assets/images/no-data.png";
 import {
   Chart as ChartJS,
   Title,
@@ -28,6 +29,7 @@ function ReportChart() {
   const [getDate, setGetDate] = useState([]);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [showChart, setShowChart] = useState(false); // State to control chart visibility
 
   useEffect(() => {
     const fetchChart = async () => {
@@ -76,6 +78,7 @@ function ReportChart() {
 
       setTotalIncome(incomeData);
       setGetDate(incomeDate);
+      setShowChart(true); // Show chart after search
     } catch (err) {
       console.error("Error fetching chart data:", err);
     }
@@ -133,7 +136,18 @@ function ReportChart() {
           </button>
         </div>
       </div>
-      <Line options={options} data={data} />
+      {showChart ? (
+        <Line options={options} data={data} /> // Conditionally render the chart
+      ) : (
+        <div className="w-full justify-center mt-8 flex">
+          <img
+            src={noData}
+            alt="no-data"
+            style={{ width: "500px" }}
+            className="no-data"
+          />
+        </div>
+      )}
     </div>
   );
 }

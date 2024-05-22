@@ -985,18 +985,28 @@ app.get("/lessSold", (req, res) => {
 // get report for sales
 app.get("/reportSalesLogs", (req, res) => {
   const query = `
+   SELECT 
+    NO,
+    name, 
+    quantity, 
+    total_price, 
+    discounted_price, 
+    date 
+FROM (
     SELECT 
-    a.name, 
-    a.quantity, 
-    (a.quantity * a.price) AS total_price, 
-    ROUND(((a.quantity * a.price) * (100 - b.total_discount) / 100), 2) AS discounted_price, 
-    b.date 
-FROM 
-    order_items AS a 
-INNER JOIN 
-    orders AS b ON a.order_id = b.id 
+        ROW_NUMBER() OVER (ORDER BY a.id ASC) AS NO,
+        a.name, 
+        a.quantity, 
+        (a.quantity * a.price) AS total_price, 
+        ROUND(((a.quantity * a.price) * (100 - b.total_discount) / 100), 2) AS discounted_price, 
+        b.date 
+    FROM 
+        order_items AS a 
+    INNER JOIN 
+        orders AS b ON a.order_id = b.id 
+) AS numbered_data
 ORDER BY 
-    b.date DESC
+    NO DESC
   `;
 
   // Execute the query with the provided year

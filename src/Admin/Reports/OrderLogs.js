@@ -116,7 +116,7 @@ function OrderLogs() {
             <table className="table-auto mt-2 bg-[#f6fdef] shadow-md px-8 pt-6 pb-8 mb-4 w-full border-collapse border border-slate-400 p-5 text-center">
               <thead>
                 <tr>
-                  <th className="border border-slate-300 p-2">Id</th>
+                  <th className="border border-slate-300 p-2">No.</th>
                   <th className="border border-slate-300 p-2">Product</th>
                   <th className="border border-slate-300 p-2">Quantity</th>
                   <th className="border border-slate-300 p-2">Price</th>
@@ -130,7 +130,7 @@ function OrderLogs() {
                 {selectedLogs.map((d, index) => (
                   <tr key={index}>
                     <td className="border border-slate-300 p-2 uppercase font-bold">
-                      {index + 1}
+                      {d.NO}
                     </td>
                     <td className="border border-slate-300 p-2 uppercase font-bold">
                       {d.name}
