@@ -1,5 +1,6 @@
 import React from "react";
 import DailyIncome from "./DailyIncome";
+import WeeklyIncome from "./WeeklyIncome";
 
 function CashierReport({ user }) {
   return (
@@ -11,7 +12,7 @@ function CashierReport({ user }) {
             <DailyIncome user={user} />
           </div>
           <div className="col-span-1">
-            <DailyIncome user={user} />
+            <WeeklyIncome user={user} />
           </div>
           <div className="col-span-1">
             <DailyIncome user={user} />

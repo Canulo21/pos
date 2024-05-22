@@ -7,10 +7,12 @@ import { fadeIn } from "../../variants";
 import Isotope from "isotope-layout";
 import DashBoardCashierAddtoCart from "./DashBoardCashierAddtoCart";
 
-function DashBoardCashierProdutcs({ user }) {
+function DashBoardCashierProdutcs({ ...props }) {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [getProducts, setGetProducts] = useState([]);
   const [isotope, setIsotope] = useState(null);
+
+  // console.log("from child-1", props.user);
 
   const fetchProducts = async () => {
     try {
@@ -172,7 +174,7 @@ function DashBoardCashierProdutcs({ user }) {
               </div>
               <DashBoardCashierAddtoCart
                 selectedProductIds={selectedProductIds}
-                user={user}
+                user={props.user}
               />
             </div>
           </div>

@@ -53,6 +53,13 @@ function App() {
     }
   };
 
+  // Define a new function to set the user data
+  const handleSetUser = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+    console.log("sa", userData);
+  };
+
   const handleRole = (role) => {
     setIsAdmin(role === "Admin");
     localStorage.setItem("isAdmin", role === "Admin");
@@ -72,7 +79,7 @@ function App() {
                   <LoginForm
                     isLogin={handleLogin}
                     isRole={handleRole}
-                    setGetUser={handleLogin}
+                    setGetUser={handleSetUser} // Pass handleSetUser here
                   />
                 }
               />

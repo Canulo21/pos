@@ -9,7 +9,9 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
   const [products, setProducts] = useState([]);
   const [productQuantities, setProductQuantities] = useState({});
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("");
-  const [getCashier, setGetCashier] = useState("");
+
+  const fname = user.fname;
+  const lname = user.lname;
 
   const fetchProducts = async () => {
     try {
@@ -44,8 +46,7 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
 
   useEffect(() => {
     fetchProducts();
-    setGetCashier(`${user.fname} ${user.lname}`);
-  }, [selectedProductIds, user]);
+  }, [selectedProductIds]);
 
   const handleInput = async (e, productId) => {
     const quantity = parseInt(e.target.value);
@@ -154,7 +155,7 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
           </div>
             <hr>
           <div class="under-wrap">
-            <p>Cashier:  ${getCashier}</p>
+            <p>Cashier:  ${fname} ${lname} </p>
           </div>
             <hr>
       
@@ -170,8 +171,8 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
               selectedDiscountCategory,
               totalDiscount: getTheDiscount,
               discountedTotal: totalPriceWDiscount,
-              fname: user.fname,
-              lname: user.lname,
+              fname: fname,
+              lname: lname,
             })
             .then((response) => {
               if (response.status === 201) {
@@ -187,12 +188,28 @@ function DashBoardCashierAddtoCart({ selectedProductIds, user }) {
               }
             })
             .catch((error) => {
-              console.error("Error saving order:", error);
+              if (error.response) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oppssss ...",
+                  text: error.response.data
+                    ? error.response.data
+                    : "An unexpected error occurred. Please try again later.",
+                });
+              }
             });
         }
       });
     } catch (error) {
-      console.error("Error saving order:", error);
+      if (error.response) {
+        Swal.fire({
+          icon: "error",
+          title: "Oppssss ...",
+          text: error.response.data
+            ? error.response.data
+            : "An unexpected error occurred. Please try again later.",
+        });
+      }
     }
   };
 

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { fadeIn } from "../../variants";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 
 function LoginForm({ isLogin, isRole, setGetUser }) {
@@ -13,71 +11,51 @@ function LoginForm({ isLogin, isRole, setGetUser }) {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post("/login", { username, password });
-
-      if (response.status === 200) {
+    axios
+      .post("/login", { username, password })
+      .then((response) => {
         const userData = response.data.user;
-        console.log("data", userData);
-        setGetUser(userData); // Update user data
-        isRole(userData.role);
-        isLogin(true); // Set login state to true
-        localStorage.setItem("token", "your_token_here");
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("isAdmin", userData.role === "Admin");
+        // Pass user data to App.js
+        setGetUser(userData);
 
-        // Navigate to the dashboard after 2 seconds
-        setTimeout(() => {
+        if (response.status === 200) {
+          isRole(userData.role);
+          isLogin(true); // Set login state to true
+          localStorage.setItem("token", "your_token_here");
+          localStorage.setItem("user", JSON.stringify(userData));
+          localStorage.setItem("isAdmin", userData.role === "Admin");
+
           navigate("/dashboard");
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Login failed:", error.response.data);
-      setError("Invalid username or password");
-    }
+        }
+      })
+      .catch((error) => {
+        console.error("Login failed:", error.response.data);
+        setError("Invalid username or password");
+      });
   };
+
   const showEyePassword = () => {
     setShowPassword(!showPassword);
-  };
-
-  const modalVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.8,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
-  };
-
-  const modalTransition = {
-    type: "spring",
-    stiffness: 260,
-    damping: 20,
   };
 
   return (
     <div className="bg">
       <motion.div
-        variants={fadeIn("down", 0.2)}
-        initial="hidden"
-        whileInView={"show"}
-        viewport={{ once: true, amount: 0.3 }}
-        className="mb-20">
+        className="mb-20"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}>
         <h1 className="text-8xl text-zinc-100 drop-shadow-2xl">P.O.S System</h1>
       </motion.div>
 
       <motion.div
-        variants={modalVariants}
-        initial="hidden"
-        animate="visible"
-        exit="hidden"
-        transition={modalTransition}
-        className="form px-8 pb-8 pt-10 shadow-2xl bg-[#edebe1]">
+        className="form px-8 pb-8 pt-10 shadow-2xl bg-[#edebe1]"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}>
         <h1 className="text-center pb-9">Login Form</h1>
         {error && <p className="text-red-600 mb-3">{error}</p>}
         <form className="w-96" onSubmit={handleLogin}>
