@@ -7,18 +7,21 @@ import { fadeIn } from "../../variants";
 import Isotope from "isotope-layout";
 import DashBoardCashierAddtoCart from "./DashBoardCashierAddtoCart";
 
+const ITEMS_PER_PAGE = 24; // Number of items to display per page
+
 function DashBoardCashierProdutcs({ user }) {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [getProducts, setGetProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isotope, setIsotope] = useState(null);
-
-  // console.log("from child-1", props.user);
 
   const fetchProducts = async () => {
     try {
       const res = await axios.get("/allProducts");
       const allProduct = res.data;
       setGetProducts(allProduct);
+      setFilteredProducts(allProduct); // Set initially filtered products to all products
     } catch (err) {
       console.error("Error fetching products:", err);
     }
@@ -29,24 +32,31 @@ function DashBoardCashierProdutcs({ user }) {
   }, []);
 
   useEffect(() => {
-    if (getProducts.length > 0) {
-      setIsotope(
-        new Isotope(".filter-section", {
-          itemSelector: ".filter-item",
-          layoutMode: "fitRows",
-        })
-      );
-    }
-  }, [getProducts]);
-
-  const handleFilter = (filterValue) => {
-    if (isotope && isotope.filteredItems) {
-      if (isotope.filteredItems.length > 0) {
-        isotope.arrange({ filter: filterValue });
+    if (filteredProducts.length > 0) {
+      if (!isotope) {
+        setIsotope(
+          new Isotope(".filter-section", {
+            itemSelector: ".filter-item",
+            layoutMode: "fitRows",
+          })
+        );
       } else {
-        isotope.layout();
+        isotope.reloadItems();
+        isotope.arrange();
       }
     }
+  }, [filteredProducts, currentPage]);
+
+  const handleFilter = (filterValue) => {
+    if (filterValue === "*") {
+      setFilteredProducts(getProducts);
+    } else {
+      const filtered = getProducts.filter(
+        (product) => product.category_name === filterValue.slice(1)
+      );
+      setFilteredProducts(filtered);
+    }
+    setCurrentPage(1); // Reset to first page whenever a filter is applied
   };
 
   const uniqueCategories = [
@@ -63,16 +73,39 @@ function DashBoardCashierProdutcs({ user }) {
     }
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
+  const getPaginationGroup = () => {
+    let startPage = Math.max(2, currentPage - 2);
+    let endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  };
+
   return (
     <>
       <div id="container">
         <div className="prod-bg">
           <div className="w-full flex gap-5">
-            <div className="xxl:w-3/4 w-1/2 ">
-              {getProducts.length > 0 ? (
+            <div className="xxl:w-3/4 w-1/2">
+              {filteredProducts.length > 0 ? (
                 <div className="">
                   <div className="filter-section w-full">
-                    {getProducts.map((products, index) => (
+                    {currentProducts.map((products, index) => (
                       <motion.div
                         variants={fadeIn("up", 0.2)}
                         initial="hidden"
@@ -119,6 +152,50 @@ function DashBoardCashierProdutcs({ user }) {
                       </motion.div>
                     ))}
                   </div>
+                  {/* Pagination controls */}
+                  <motion.div
+                    variants={fadeIn("right", 0.8)}
+                    initial="hidden"
+                    whileInView={"show"}
+                    viewport={{ once: true, amount: 0.4 }}
+                    className="flex justify-center mt-4 bg-[#436850] p-2 shadow-xl">
+                    <button
+                      className={`mx-1 px-3 py-1 border rounded ${
+                        currentPage === 1
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200"
+                      }`}
+                      onClick={() => handlePageChange(1)}>
+                      1
+                    </button>
+                    {currentPage > 4 && <span className="mx-1">...</span>}
+                    {getPaginationGroup().map((item, index) => (
+                      <button
+                        key={index}
+                        className={`mx-1 px-3 py-1 border rounded ${
+                          item === currentPage
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200"
+                        }`}
+                        onClick={() => handlePageChange(item)}>
+                        {item}
+                      </button>
+                    ))}
+                    {currentPage < totalPages - 3 && (
+                      <span className="mx-1">...</span>
+                    )}
+                    {totalPages > 1 && (
+                      <button
+                        className={`mx-1 px-3 py-1 border rounded ${
+                          currentPage === totalPages
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200"
+                        }`}
+                        onClick={() => handlePageChange(totalPages)}>
+                        {totalPages}
+                      </button>
+                    )}
+                  </motion.div>
                 </div>
               ) : (
                 <motion.div
@@ -139,13 +216,13 @@ function DashBoardCashierProdutcs({ user }) {
                 </motion.div>
               )}
             </div>
-            <div className="xxl:w-1/4 w-1/2">
-              <motion.div
-                variants={fadeIn("left", 0.4)}
-                initial="hidden"
-                whileInView={"show"}
-                viewport={{ once: true, amount: 0.4 }}
-                className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit">
+            <motion.div
+              variants={fadeIn("left", 0.4)}
+              initial="hidden"
+              whileInView={"show"}
+              viewport={{ once: true, amount: 0.4 }}
+              className="xxl:w-1/4 w-1/2 bg-[#cbc9c9] p-3 shadow-xl">
+              <div className="shadow-lg border-solid border-2 border-lime-700 pt-1 px-2 pb-5 h-fit bg-[#fff]">
                 <h3 className="text-center mb-2">Categories</h3>
                 {getProducts.length > 0 ? (
                   <div className="flex flex-wrap gap-2 justify-center">
@@ -176,12 +253,12 @@ function DashBoardCashierProdutcs({ user }) {
                     </p>
                   </div>
                 )}
-              </motion.div>
+              </div>
               <DashBoardCashierAddtoCart
                 selectedProductIds={selectedProductIds}
                 user={user}
               />
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
