@@ -253,6 +253,7 @@ app.get("/activeUsers", (req, res) => {
 
 app.get("/", (req, res) => {
   console.log("im in");
+  res.send("Zupp nigger");
 });
 
 //** End For Users  **//
