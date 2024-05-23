@@ -251,6 +251,10 @@ app.get("/activeUsers", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  console.log("im in");
+});
+
 //** End For Users  **//
 
 // -----------------------------------------------------------
