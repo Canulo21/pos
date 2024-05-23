@@ -57,7 +57,6 @@ function App() {
   const handleSetUser = (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-    console.log("sa", userData);
   };
 
   const handleRole = (role) => {

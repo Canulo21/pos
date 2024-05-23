@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import noData from "../../Assets/images/no-data.png";
 import { Line } from "react-chartjs-2";
 import { SearchIcon } from "lucide-react";
 import axios from "axios";
@@ -96,7 +97,18 @@ function ReportChartByYear() {
           <span>Search</span>
         </button>
       </div>
-      <Line options={options} data={data} />
+      {totalIncome.length > 0 ? (
+        <Line options={options} data={data} />
+      ) : (
+        <div className="w-full justify-center mt-8 flex">
+          <img
+            src={noData}
+            alt="no-data"
+            style={{ width: "500px" }}
+            className="no-data"
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -1042,6 +1042,56 @@ app.get("/cashierDailyIncome", (req, res) => {
   });
 });
 
+app.get("/cashierWeeklyIncome", (req, res) => {
+  const cashierName = req.query.cashierName;
+  const today = new Date();
+  const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+  const weekNumber = Math.ceil(
+    ((today - firstDayOfYear) / 86400000 + firstDayOfYear.getDay() + 1) / 7
+  );
+
+  const query = `
+    SELECT YEARWEEK(DATE, 1) AS WEEK, SUM(discounted_total) AS total_income
+    FROM orders
+    WHERE YEARWEEK(DATE, 1) = YEARWEEK(CURDATE(), 1)
+    AND CONCAT(fname, ' ', lname) = ?
+    GROUP BY YEARWEEK(DATE, 1)
+  `;
+  db.query(query, [cashierName], (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(
+      data[0] || {
+        week: `${today.getFullYear()}-${weekNumber}`,
+        total_income: 0,
+      }
+    );
+  });
+});
+
+app.get("/cashierMonthlyIncome", (req, res) => {
+  const cashierName = req.query.cashierName;
+  const query = `
+    SELECT DATE_FORMAT(date, '%Y-%m') AS month, SUM(discounted_total) AS total_income
+    FROM orders
+    WHERE DATE_FORMAT(date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+     AND CONCAT(fname, ' ', lname) = ?
+    GROUP BY DATE_FORMAT(date, '%Y-%m')
+  `;
+  db.query(query, [cashierName], (err, data) => {
+    if (err) {
+      return res.status(500).json({ Message: "Error" });
+    }
+    return res.json(
+      data[0] || {
+        month: new Date().toISOString().slice(0, 7),
+        total_income: 0,
+      }
+    );
+  });
+});
+
 // Start server
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on http://0.0.0.0:${port}`);

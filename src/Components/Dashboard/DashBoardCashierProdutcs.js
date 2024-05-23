@@ -67,11 +67,11 @@ function DashBoardCashierProdutcs({ user }) {
     <>
       <div id="container">
         <div className="prod-bg">
-          <div className="w-full flex">
-            <div className="xxl:w-3/4 w-1/2">
+          <div className="w-full flex gap-5">
+            <div className="xxl:w-3/4 w-1/2 ">
               {getProducts.length > 0 ? (
                 <div className="">
-                  <div className="filter-section">
+                  <div className="filter-section w-full">
                     {getProducts.map((products, index) => (
                       <motion.div
                         variants={fadeIn("up", 0.2)}
@@ -79,13 +79,13 @@ function DashBoardCashierProdutcs({ user }) {
                         whileInView={"show"}
                         viewport={{ once: true, amount: 0.3 }}
                         key={index}
-                        className={`shadow-lg filter-item mr-5 mb-5 ${products.category_name}`}>
-                        <div className="text-center" style={{ width: "180px" }}>
+                        className={`shadow-lg filter-item mr-3 mb-3 bg-white ${products.category_name}`}>
+                        <div className="text-center" style={{ width: "170px" }}>
                           <div
                             className="flex items-center justify-center"
                             style={{
-                              width: "180px",
-                              height: "200px",
+                              width: "170px",
+                              height: "190px",
                               background: products.category_color,
                             }}>
                             <img

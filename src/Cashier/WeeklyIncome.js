@@ -8,7 +8,7 @@ function WeeklyIncome({ user }) {
 
   const fetchWeeklyIncome = async () => {
     try {
-      const res = await axios.get("/cashierDailyIncome", {
+      const res = await axios.get("/cashierWeeklyIncome", {
         params: { cashierName: `${user.fname} ${user.lname}` }, // Correct syntax for concatenating first name and last name
       });
       const get = res.data.total_income;

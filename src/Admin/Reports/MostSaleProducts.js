@@ -23,7 +23,7 @@ function MostSaleProducts() {
   }, []);
 
   return (
-    <div className="bg-slate-50 py-2 px-2 shadow-lg relative dashboard-icon text-center h-full">
+    <div className="bg-slate-50 py-2 px-2 shadow-lg relative dashboard-icon text-center h-full flex flex-col justify-center">
       <div className="flex items-center gap-2 mb-6 justify-center">
         <h5>Most Sold Items</h5>
         <TrendingUpIcon size={40} color="#2463b3" />
