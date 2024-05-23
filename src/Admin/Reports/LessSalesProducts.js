@@ -31,7 +31,7 @@ function LessSalesProducts() {
         </div>
         {isLoading ? (
           <div className="text-center py-4">Loading...</div>
-        ) : (
+        ) : less.length > 0 ? (
           less.map((m, index) => (
             <div
               key={index}
@@ -41,6 +41,8 @@ function LessSalesProducts() {
               </p>
             </div>
           ))
+        ) : (
+          <div className="text-center py-4">No items to display</div>
         )}
       </div>
     </>

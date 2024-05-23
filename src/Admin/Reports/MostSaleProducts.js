@@ -30,7 +30,7 @@ function MostSaleProducts() {
       </div>
       {isLoading ? (
         <div className="text-center py-4">Loading...</div>
-      ) : (
+      ) : most.length > 0 ? (
         most.map((m, index) => (
           <div
             key={index}
@@ -40,6 +40,8 @@ function MostSaleProducts() {
             </p>
           </div>
         ))
+      ) : (
+        <div className="text-center py-4">No items to display</div>
       )}
     </div>
   );

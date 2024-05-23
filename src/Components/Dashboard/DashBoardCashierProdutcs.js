@@ -7,7 +7,7 @@ import { fadeIn } from "../../variants";
 import Isotope from "isotope-layout";
 import DashBoardCashierAddtoCart from "./DashBoardCashierAddtoCart";
 
-const ITEMS_PER_PAGE = 24; // Number of items to display per page
+const ITEMS_PER_PAGE = 21; // Number of items to display per page
 
 function DashBoardCashierProdutcs({ user }) {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
@@ -45,7 +45,7 @@ function DashBoardCashierProdutcs({ user }) {
         isotope.arrange();
       }
     }
-  }, [filteredProducts, currentPage]);
+  }, [filteredProducts, currentPage, isotope]);
 
   const handleFilter = (filterValue) => {
     if (filterValue === "*") {
@@ -104,13 +104,14 @@ function DashBoardCashierProdutcs({ user }) {
             <div className="xxl:w-3/4 w-1/2">
               {filteredProducts.length > 0 ? (
                 <div className="">
-                  <div className="filter-section w-full">
+                  <motion.div
+                    variants={fadeIn("up", 0.2)}
+                    initial="hidden"
+                    whileInView={"show"}
+                    viewport={{ once: true, amount: 0.3 }}
+                    className="filter-section w-full">
                     {currentProducts.map((products, index) => (
-                      <motion.div
-                        variants={fadeIn("up", 0.2)}
-                        initial="hidden"
-                        whileInView={"show"}
-                        viewport={{ once: true, amount: 0.3 }}
+                      <div
                         key={index}
                         className={`shadow-lg filter-item mr-3 mb-3 bg-white ${products.category_name}`}>
                         <div className="text-center" style={{ width: "170px" }}>
@@ -149,9 +150,9 @@ function DashBoardCashierProdutcs({ user }) {
                             </button>
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
-                  </div>
+                  </motion.div>
                   {/* Pagination controls */}
                   <motion.div
                     variants={fadeIn("right", 0.8)}
